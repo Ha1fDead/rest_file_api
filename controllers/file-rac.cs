@@ -17,30 +17,67 @@ namespace maplarge_restapicore.controllers
         [HttpGet]
         public async Task<ActionResult<ApiDirectory>> Get()
         {
-            return FileHelper.GetDirectoryInfo(new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+            return FileHelper.GetDirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
         }
 
-        [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> Delete(string path_to_file)
+        [HttpGet]
+        [Route("download/{relativePathToFile")]
+        public async Task<ActionResult> Download(string relativePathToFile)
         {
-            return Ok();
+            // ensure multiple people can download file simultaneously
+            // https://stackoverflow.com/questions/42460198/return-file-in-asp-net-core-web-api
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<ApiFile>> Upload(string filename)
         {
-            var createdFile = new ApiFile();
-            return CreatedAtAction("something", 4, createdFile);
+            // ensure multiple people can upload file simultaneously
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
+        [HttpGet]
+        [Route("search/{filename}")]
+        // Extra maybe?
+        public async Task<ActionResult> Search(string filename)
+        {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
+        [HttpDelete]
+        [Route("{relativePathToFile}")]
+        // Extra
+        public async Task<ActionResult> Delete(string relativePathToFile)
+        {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
+        [HttpPut]
+        [Route("move")]
+        // Extra
+        public async Task<ActionResult> MoveFile(string file_to_move, string relative_directory)
+        {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
+        [HttpPut]
+        [Route("copy")]
+        // Extra
+        public async Task<ActionResult> CopyFile(string file_to_copy, string name_of_copy)
+        {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
     }
 
     public static class FileHelper
     {
-        public static ApiDirectory GetDirectoryInfo(DirectoryInfo info)
+        public static ApiDirectory GetDirectoryInfo(string relativePath)
         {
+            return GetDirectoryInfo(relativePath, new DirectoryInfo(relativePath));
+        }
 
+        public static ApiDirectory GetDirectoryInfo(string relativePath, DirectoryInfo info)
+        {
             var allfiles = new List<ApiFile>();
             foreach(var file in info.GetFiles())
             {
@@ -50,6 +87,7 @@ namespace maplarge_restapicore.controllers
             var directory = new ApiDirectory
             {
                 Name = info.FullName,
+                RelativePath = relativePath,
                 Files = allfiles,
                 SubDirectories = new List<string>()
             };
@@ -71,6 +109,7 @@ namespace maplarge_restapicore.controllers
         }
 
         // Oof directory walking can get complex. Mapping my home directory takes FOR-EH-VER
+        // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-iterate-through-a-directory-tree
         public static long DirSizeRecursive(DirectoryInfo d) 
         {    
             long size = 0;    
