@@ -25,6 +25,7 @@ namespace maplarge_restapicore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
             app.UseStaticFiles();
         }
     }
