@@ -20,7 +20,7 @@ namespace maplarge_restapicore.controllers
         [Route("")]
         public async Task<ActionResult<ApiDirectory>> Get(string relativePathToDirectory)
         {
-            if (string.IsNullOrEmpty(relativePathToDirectory)) {
+            if (string.IsNullOrEmpty(relativePathToDirectory) || relativePathToDirectory == "/") {
                 relativePathToDirectory = "";
             }
 

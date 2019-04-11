@@ -46,7 +46,7 @@ export default class DirectoriesComponent extends HTMLElement {
                 <tbody>
                 ${directory.subDirectories.map((dir) => html`
                     <tr>
-                        <td><a href="${directory.relativePath}/${dir}">${dir}</a></td>
+                        <td><a href="${this.generateLinkToDirectory(directory.relativePath, dir)}">${dir}</a></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -55,7 +55,7 @@ export default class DirectoriesComponent extends HTMLElement {
                 `)}
                 ${directory.files.map((file) => html`
                     <tr>
-                        <td><a href="/api/file/download${directory.relativePath}/${file.name}">${file.name}</a></td>
+                        <td><a href="${this.generateLinkToFile(directory.relativePath, file.name)}">${file.name}</a></td>
                         <td>${file.sizeBytes}</td>
                         <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
                         <td>${new Date(file.dateModified).toLocaleDateString()}</td>
@@ -66,12 +66,23 @@ export default class DirectoriesComponent extends HTMLElement {
             </table>
         `;
 
-        let directory = await this.fileService.GetDirectory();
+        // Todo -- move this to invert it
+        var cwd = window.location.pathname.substr(1);
+        let directory = await this.fileService.GetDirectory(cwd);
         console.log(directory);
         console.log(this);
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));
         console.log('rendered');
     }
+
+    generateLinkToDirectory(relativePath, subDirectory) {
+        return `/${relativePath ? `${relativePath}/` : ``}${subDirectory}`;
+    }
+
+    generateLinkToFile(relativePath, fileName) {
+        // todo -- friendify filename and relative path
+        return `/api/file/download/${relativePath}/${fileName}`;
+    } 
 }
 
 customElements.define("demo-directories", DirectoriesComponent);
