@@ -39,12 +39,27 @@ namespace maplarge_restapicore.controllers
         }
 
         [HttpGet]
-        [Route("download/{relativePathToFile}")]
+        [HttpPost]
+        [Route("download/{*relativePathToFile}")]
         public async Task<ActionResult> Download(string relativePathToFile)
         {
-            // ensure multiple people can download file simultaneously
-            // https://stackoverflow.com/questions/42460198/return-file-in-asp-net-core-web-api
-            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToFile));
+            if (!resolvedPath.StartsWith(server_path)) {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return StatusCode(403);
+            }
+
+            if (!System.IO.File.Exists(resolvedPath)) {
+                return StatusCode(404);
+            }
+
+            var memory = new MemoryStream();  
+            using (var stream = new FileStream(resolvedPath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);  
+            }
+            memory.Position = 0;
+            return File(memory, "application/octet-stream", Path.GetFileName(resolvedPath));
         }
 
         [HttpPost]
