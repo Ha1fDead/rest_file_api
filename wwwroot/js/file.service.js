@@ -3,9 +3,9 @@
 
     }
 
-    async GetFiles() {
-        let res = await fetch('api/file');
+    async GetDirectory() {
+        let res = await fetch('/api/file');
         let data = await res.json();
-        console.log(data);
+        return data;
     }
 }

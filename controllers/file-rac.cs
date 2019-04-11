@@ -21,7 +21,7 @@ namespace maplarge_restapicore.controllers
         }
 
         [HttpGet]
-        [Route("download/{relativePathToFile")]
+        [Route("download/{relativePathToFile}")]
         public async Task<ActionResult> Download(string relativePathToFile)
         {
             // ensure multiple people can download file simultaneously
@@ -84,12 +84,20 @@ namespace maplarge_restapicore.controllers
                 allfiles.Add(GetFileInfo(file));
             }
 
+            Console.WriteLine(allfiles.Count);
+
+            var allDirectories = new List<string>();
+            foreach(var dir in info.GetDirectories())
+            {
+                allDirectories.Add(dir.Name);
+            }
+
             var directory = new ApiDirectory
             {
                 Name = info.FullName,
                 RelativePath = relativePath,
                 Files = allfiles,
-                SubDirectories = new List<string>()
+                SubDirectories = allDirectories
             };
 
             return directory;

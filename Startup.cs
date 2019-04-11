@@ -26,9 +26,10 @@ namespace maplarge_restapicore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMvc();
+            app.UseStatusCodePagesWithReExecute("/");
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseMvc();
         }
     }
 }

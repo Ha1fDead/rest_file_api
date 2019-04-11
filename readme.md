@@ -18,3 +18,7 @@ The client should...
 
 - Be deep-linkable (state stored in URL)
 - Be a SPA
+
+## Architecture
+
+To automate client-side rendering & templating, I used [lit-html](https://lit-html.polymer-project.org). I like web components.
