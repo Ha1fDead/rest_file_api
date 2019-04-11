@@ -17,16 +17,25 @@ namespace maplarge_restapicore.controllers
         public readonly string server_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         
         [HttpGet]
-        public async Task<ActionResult<ApiDirectory>> Get()
+        [Route("")]
+        public async Task<ActionResult<ApiDirectory>> Get(string relativePathToFile)
         {
-            var relativePath = "./";
-            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePath));
-            if (!resolvedPath.StartsWith(server_path)) {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(403, resolvedPath);
+            if (string.IsNullOrEmpty(relativePathToFile)) {
+                relativePathToFile = "";
             }
 
-            return FileHelper.GetDirectoryInfo(relativePath, resolvedPath);
+            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToFile));
+            if (!resolvedPath.StartsWith(server_path)) {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return StatusCode(403);
+            }
+
+            if (!Directory.Exists(resolvedPath)) 
+            {
+                return StatusCode(404);
+            }
+
+            return FileHelper.GetDirectoryInfo(relativePathToFile, resolvedPath);
         }
 
         [HttpGet]
