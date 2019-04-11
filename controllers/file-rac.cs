@@ -14,10 +14,19 @@ namespace maplarge_restapicore.controllers
     [ApiController]
     public class FileController : ControllerBase
     {
+        public readonly string server_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        
         [HttpGet]
         public async Task<ActionResult<ApiDirectory>> Get()
         {
-            return FileHelper.GetDirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            var relativePath = "./";
+            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePath));
+            if (!resolvedPath.StartsWith(server_path)) {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return StatusCode(403, resolvedPath);
+            }
+
+            return FileHelper.GetDirectoryInfo(relativePath, resolvedPath);
         }
 
         [HttpGet]
@@ -71,9 +80,9 @@ namespace maplarge_restapicore.controllers
 
     public static class FileHelper
     {
-        public static ApiDirectory GetDirectoryInfo(string relativePath)
+        public static ApiDirectory GetDirectoryInfo(string relativePath, string resolvedPath)
         {
-            return GetDirectoryInfo(relativePath, new DirectoryInfo(relativePath));
+            return GetDirectoryInfo(relativePath, new DirectoryInfo(resolvedPath));
         }
 
         public static ApiDirectory GetDirectoryInfo(string relativePath, DirectoryInfo info)
@@ -94,7 +103,7 @@ namespace maplarge_restapicore.controllers
 
             var directory = new ApiDirectory
             {
-                Name = info.FullName,
+                Name = info.Name,
                 RelativePath = relativePath,
                 Files = allfiles,
                 SubDirectories = allDirectories
@@ -107,7 +116,7 @@ namespace maplarge_restapicore.controllers
         {
             var file = new ApiFile
             {
-                Name = info.FullName,
+                Name = info.Name,
                 DateCreated = info.CreationTimeUtc,
                 DateModified = info.LastWriteTimeUtc,
                 SizeBytes = info.Length
