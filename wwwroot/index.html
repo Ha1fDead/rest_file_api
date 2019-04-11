@@ -10,61 +10,7 @@
             <p>Hello World</p>
             
             <demo-directories></demo-directories>
-
-            <table>
-                <thead>
-                    <tr>
-                        <!-- Clicking on these should filter and sort-->
-                        <!-- Should they sort locally or on the server? -->
-                        <!-- What if there are a gazillion files on the server, and the user wants to find one? -->
-                        <th>File Name</th>
-                        <th>Size (Bytes)</th>
-                        <th>Created</th>
-                        <th>Last Modified</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <!-- When a user types, I want the file contents to filter and search -->
-                        <td>Search</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">Current</a> / <a href="#">Path</a> / <a href="#">To</a> / Directory</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">.</a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">.. (Go Up)</a></td>
-                    </tr>
-                    <tr>
-                        <!-- Download the file -->
-                        <td><a href="#">Foo (Folder)</a></td>
-                        <td>9000000</td>
-                        <td>1/1/0001</td>
-                        <td>1/1/0001</td>
-                        <td><button>Delete</button></td>
-                    </tr>
-                    <tr>
-                        <!-- Download the file -->
-                        <td><a href="#">Foobar</a></td>
-                        <td>9999</td>
-                        <td>1/1/0001</td>
-                        <td>1/1/0001</td>
-                        <td><button>Delete</button></td>
-                    </tr>
-                </tbody>
-                <!-- Should I include pagination? Maybe later-->
-                <tfoot>
-                    <tr>
-                        <!-- Async file upload -->
-                        <th>
-                            <label for="file-upload">Upload a File</label>
-                            <input id="file-upload" type="file">
-                        </th>
-                    </tr>
-                </tfoot>
-            </table>
+            <demo-upload></demo-upload>
         </main>
     </body>
 </html>
