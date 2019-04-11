@@ -38,21 +38,21 @@ export default class DirectoriesComponent extends HTMLElement {
                     </tr>
                 </thead>
                 <tbody>
-                ${directory.files.map((file) => html`
-                    <tr>
-                        <td><a href="/api/file/download/${directory.relativePath}/${file.name}">${file.name}</a></td>
-                        <td>${file.sizeBytes}</td>
-                        <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
-                        <td>${new Date(file.dateModified).toLocaleDateString()}</td>
-                        <td><button>Delete</button></td>
-                    </tr>
-                `)}
                 ${directory.subDirectories.map((dir) => html`
                     <tr>
                         <td>${dir}</a></td>
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td><button>Delete</button></td>
+                    </tr>
+                `)}
+                ${directory.files.map((file) => html`
+                    <tr>
+                        <td><a href="/api/file/download/${directory.relativePath}/${file.name}">${file.name}</a></td>
+                        <td>${file.sizeBytes}</td>
+                        <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
+                        <td>${new Date(file.dateModified).toLocaleDateString()}</td>
                         <td><button>Delete</button></td>
                     </tr>
                 `)}
