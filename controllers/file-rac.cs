@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using maplarge_restapicore.models;
+using System.Linq;
 
 namespace maplarge_restapicore.controllers
 {
@@ -63,10 +64,40 @@ namespace maplarge_restapicore.controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiFile>> Upload(string filename)
+        public async Task<ActionResult<ApiFile>> Upload([FromForm] ApiUploadFile upload)
         {
+            if (upload == null || string.IsNullOrEmpty(upload.RelativePathToDirectory) || upload.Files == null || upload.Files.Count() == 0) {
+                return BadRequest();
+            }
+
+            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory));
+            if (!resolvedPath.StartsWith(server_path)) {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return StatusCode(403);
+            }
+
+            // https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-2.2
             // ensure multiple people can upload file simultaneously
-            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            long size = upload.Files.Sum(f => f.Length);
+
+            // full path to file in temp location
+            var filePath = Path.GetTempFileName();
+
+            foreach (var formFile in upload.Files)
+            {
+                if (formFile.Length > 0)
+                {
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+            }
+
+            // process uploaded files
+            // Don't rely on or trust the FileName property without validation.
+
+            return Ok(new { count = upload.Files.Count, size, filePath});
         }
 
         [HttpGet]

@@ -29,8 +29,7 @@ export default class PathMapComponent extends HTMLElement {
     }
 
     async _update() {
-        var cwd = window.location.pathname.substr(1);
-        let directory = await this.fileService.GetDirectory(cwd);
+        let directory = await this.fileService.GetDirectory(this.fileService.GetCurrentRelativePath());
 
         // need to split the string but return the entire string from the split
         let pathTemplate = (currentPath) => html`

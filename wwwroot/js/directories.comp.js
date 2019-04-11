@@ -67,8 +67,7 @@ export default class DirectoriesComponent extends HTMLElement {
         `;
 
         // Todo -- move this to invert it
-        var cwd = window.location.pathname.substr(1);
-        let directory = await this.fileService.GetDirectory(cwd);
+        let directory = await this.fileService.GetDirectory(this.fileService.GetCurrentRelativePath());
         console.log(directory);
         console.log(this);
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));

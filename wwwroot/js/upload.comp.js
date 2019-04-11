@@ -1,9 +1,11 @@
+import FileService from "./file.service.js";
+
 let template = document.createElement("template");
 template.innerHTML = `
     <form id="uploadform">
         <fieldset id="uploaddrop">
             <label for="upload">Upload a File</label>
-            <input type="file" id="file">
+            <input type="file" id="file" multiple>
         </fieldset>
         <button type="submit">Upload File</button>
     </form>
@@ -47,6 +49,16 @@ export default class UploadComponent extends HTMLElement {
 
     handleUserUpload(event) {
         event.preventDefault();
+
+        let fileinput = this.shadowRoot.getElementById("file");
+
+        if (fileinput.files.length == 0) {
+            alert("You must specify a file to be uploaded");
+        }
+
+        let fileService = new FileService();
+        fileService.UploadFile(fileinput.files, fileService.GetCurrentRelativePath());
+
         return false;
     }
 }

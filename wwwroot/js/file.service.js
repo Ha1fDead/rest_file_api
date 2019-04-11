@@ -3,6 +3,10 @@
 
     }
 
+    GetCurrentRelativePath() {
+        return window.location.pathname.substr(1);
+    }
+
     async GetDirectory(relativePathToDirectory) {
         if (relativePathToDirectory == null) {
             relativePathToDirectory = "";
@@ -13,8 +17,20 @@
         return data;
     }
 
-    async UploadFile() {
-        
+    async UploadFile(filesToUpload, relativePathToDirectory) {
+        let data = new FormData();
+
+        data.append('relativePathToDirectory', relativePathToDirectory);
+        for (let x = 0; x < filesToUpload.length; x++) {
+            data.append('files', filesToUpload.item(x));
+        }
+
+        let res = await fetch('/api/file', {
+            method: 'post',
+            body: data,
+            credentials: "include",
+            mode: "cors"
+        });
     }
 
     // optional ?
