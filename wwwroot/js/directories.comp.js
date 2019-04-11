@@ -46,7 +46,7 @@ export default class DirectoriesComponent extends HTMLElement {
                 <tbody>
                 ${directory.subDirectories.map((dir) => html`
                     <tr>
-                        <td>${dir}</a></td>
+                        <td><a href="${directory.relativePath}/${dir}">${dir}</a></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -55,7 +55,7 @@ export default class DirectoriesComponent extends HTMLElement {
                 `)}
                 ${directory.files.map((file) => html`
                     <tr>
-                        <td><a href="/api/file/download/${directory.relativePath}/${file.name}">${file.name}</a></td>
+                        <td><a href="/api/file/download${directory.relativePath}/${file.name}">${file.name}</a></td>
                         <td>${file.sizeBytes}</td>
                         <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
                         <td>${new Date(file.dateModified).toLocaleDateString()}</td>
