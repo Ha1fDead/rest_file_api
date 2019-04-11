@@ -18,13 +18,13 @@ namespace maplarge_restapicore.controllers
         
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<ApiDirectory>> Get(string relativePathToFile)
+        public async Task<ActionResult<ApiDirectory>> Get(string relativePathToDirectory)
         {
-            if (string.IsNullOrEmpty(relativePathToFile)) {
-                relativePathToFile = "";
+            if (string.IsNullOrEmpty(relativePathToDirectory)) {
+                relativePathToDirectory = "";
             }
 
-            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToFile));
+            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToDirectory));
             if (!resolvedPath.StartsWith(server_path)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
                 return StatusCode(403);
@@ -35,7 +35,7 @@ namespace maplarge_restapicore.controllers
                 return StatusCode(404);
             }
 
-            return FileHelper.GetDirectoryInfo(relativePathToFile, resolvedPath);
+            return FileHelper.GetDirectoryInfo(relativePathToDirectory, resolvedPath);
         }
 
         [HttpGet]
@@ -63,9 +63,9 @@ namespace maplarge_restapicore.controllers
         }
 
         [HttpDelete]
-        [Route("{relativePathToFile}")]
+        [Route("")]
         // Extra
-        public async Task<ActionResult> Delete(string relativePathToFile)
+        public async Task<ActionResult> Delete(string relativePathToDirectory, string fileName)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
@@ -73,7 +73,7 @@ namespace maplarge_restapicore.controllers
         [HttpPut]
         [Route("move")]
         // Extra
-        public async Task<ActionResult> MoveFile(string file_to_move, string relative_directory)
+        public async Task<ActionResult> MoveFile(string file_to_move, string relativePathToDirectory)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
@@ -81,7 +81,7 @@ namespace maplarge_restapicore.controllers
         [HttpPut]
         [Route("copy")]
         // Extra
-        public async Task<ActionResult> CopyFile(string file_to_copy, string name_of_copy)
+        public async Task<ActionResult> CopyFile(string relativePathToDirectory, string file_to_copy, string name_of_copy)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
@@ -89,12 +89,12 @@ namespace maplarge_restapicore.controllers
 
     public static class FileHelper
     {
-        public static ApiDirectory GetDirectoryInfo(string relativePath, string resolvedPath)
+        public static ApiDirectory GetDirectoryInfo(string relativePathToDirectory, string resolvedPath)
         {
-            return GetDirectoryInfo(relativePath, new DirectoryInfo(resolvedPath));
+            return GetDirectoryInfo(relativePathToDirectory, new DirectoryInfo(resolvedPath));
         }
 
-        public static ApiDirectory GetDirectoryInfo(string relativePath, DirectoryInfo info)
+        public static ApiDirectory GetDirectoryInfo(string relativePathToDirectory, DirectoryInfo info)
         {
             var allfiles = new List<ApiFile>();
             foreach(var file in info.GetFiles())
@@ -113,7 +113,7 @@ namespace maplarge_restapicore.controllers
             var directory = new ApiDirectory
             {
                 Name = info.Name,
-                RelativePath = relativePath,
+                RelativePath = relativePathToDirectory,
                 Files = allfiles,
                 SubDirectories = allDirectories
             };

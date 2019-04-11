@@ -18,12 +18,18 @@ export default class DirectoriesComponent extends HTMLElement {
     constructor() {
         super();
 
+        this.fileService = new FileService();
+
         const shadow = this.attachShadow({mode: "open"});
         shadow.appendChild(style.cloneNode(true));
 
         this._wrapper = template.content.cloneNode(true);
         shadow.appendChild(this._wrapper);
         this._update();
+    }
+
+    HandleDelete(e, relativePath, fileName) {
+        this.fileService.Delete(relativePath, fileName);
     }
 
     async _update() {
@@ -44,7 +50,7 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td><button>Delete</button></td>
+                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, null) }}>Delete</button></td>
                     </tr>
                 `)}
                 ${directory.files.map((file) => html`
@@ -53,15 +59,14 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td>${file.sizeBytes}</td>
                         <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
                         <td>${new Date(file.dateModified).toLocaleDateString()}</td>
-                        <td><button>Delete</button></td>
+                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, file.name) }}>Delete</button></td>
                     </tr>
                 `)}
                 </tbody>
             </table>
         `;
 
-        var file_service = new FileService();
-        let directory = await file_service.GetDirectory();
+        let directory = await this.fileService.GetDirectory();
         console.log(directory);
         console.log(this);
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));
