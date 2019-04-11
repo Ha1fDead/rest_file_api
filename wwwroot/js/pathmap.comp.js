@@ -28,22 +28,33 @@ export default class PathMapComponent extends HTMLElement {
         this._update();
     }
 
-    HandleDelete(e, relativePath, fileName) {
-        this.fileService.Delete(relativePath, fileName);
-    }
-
     async _update() {
-        let directory = await this.fileService.GetDirectory();
+        var cwd = window.location.pathname.substr(1);
+        let directory = await this.fileService.GetDirectory(cwd);
 
+        // need to split the string but return the entire string from the split
         let pathTemplate = (currentPath) => html`
-            ${currentPath.split("/").map((subpath) => html`
-                / <a href="${subpath}">${subpath}</a>
+            <a href="/">Home</a> 
+            ${this.splitStringIntoParts(currentPath, "/").map((subpath) => html`
+                / <a href="${subpath.prev}">${subpath.part}</a>
             `)}
         `;
 
-        console.log(directory);
-        console.log(this);
         render(pathTemplate(directory.relativePath), this.shadowRoot.getElementById("wrapper"));
+    }
+
+    splitStringIntoParts(str, delimiter) {
+        let split = str.split(delimiter);
+        let parts = [];
+        for (let x = 0; x < split.length; x++) {
+            let previous = `/${split.slice(0, x + 1).join("/")}`;
+            parts[x] = {
+                prev: previous,
+                part: split[x]
+            };
+        }
+
+        return parts;
     }
 }
 
