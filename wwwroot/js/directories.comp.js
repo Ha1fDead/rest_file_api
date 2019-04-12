@@ -80,7 +80,7 @@ export default class DirectoriesComponent extends HTMLElement {
 
     generateLinkToFile(relativePath, fileName) {
         // todo -- friendify filename and relative path
-        return `/api/file/download/${relativePath}/${fileName}`;
+        return `/api/file/download/${relativePath ? `${relativePath}/` : ``}${fileName}`;
     } 
 }
 
