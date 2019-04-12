@@ -21,12 +21,8 @@ namespace maplarge_restapicore.controllers
         [Route("")]
         public async Task<ActionResult<ApiDirectory>> Get(string relativePathToDirectory)
         {
-            if (string.IsNullOrEmpty(relativePathToDirectory) || relativePathToDirectory == "/") {
-                relativePathToDirectory = "";
-            }
-
-            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToDirectory));
-            if (!resolvedPath.StartsWith(server_path)) {
+            var resolvedPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+            if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
@@ -44,8 +40,9 @@ namespace maplarge_restapicore.controllers
         [Route("download/{*relativePathToFile}")]
         public async Task<ActionResult> Download(string relativePathToFile)
         {
-            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToFile));
-            if (!resolvedPath.StartsWith(server_path)) {
+            // Client already formats path so users see a "Clean" url
+            var resolvedPath = this.GetAbsoluteFilePath("", relativePathToFile);
+            if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
@@ -70,22 +67,16 @@ namespace maplarge_restapicore.controllers
                 return BadRequest();
             }
 
-            if (string.IsNullOrEmpty(upload.RelativePathToDirectory))
-            {
-                upload.RelativePathToDirectory = "";
-            }
-
-            var resolvedPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory));
-            if (!resolvedPath.StartsWith(server_path)) {
+            var resolvedPath = this.GetAbsoluteDirectoryPath(upload.RelativePathToDirectory);
+            if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
 
             foreach (var formFile in upload.Files) 
             {
-                var fullDestPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory, formFile.FileName));
-
-                if (!fullDestPath.StartsWith(server_path)) {
+                var fullDestPath = this.GetAbsoluteFilePath(upload.RelativePathToDirectory, formFile.FileName);
+                if (!this.ResolvedPathIsValid(fullDestPath)) {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
@@ -111,7 +102,7 @@ namespace maplarge_restapicore.controllers
                     {
                         await formFile.CopyToAsync(stream);
 
-                        var fullDestPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory, formFile.FileName));
+                        var fullDestPath = this.GetAbsoluteFilePath(upload.RelativePathToDirectory, formFile.FileName);
 
                         System.IO.File.Move(filePath, fullDestPath);
                     }
@@ -137,6 +128,16 @@ namespace maplarge_restapicore.controllers
         // Extra
         public async Task<ActionResult> Delete(string relativePathToDirectory, string fileName)
         {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                // deleting a directory
+            }
+            else
+            {
+                // deleting a file
+                // var 
+            }
+
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
 
@@ -154,6 +155,33 @@ namespace maplarge_restapicore.controllers
         public async Task<ActionResult> CopyFile(string relativePathToDirectory, string file_to_copy, string name_of_copy)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
+        private string GetAbsoluteDirectoryPath(string relativePathToDirectory)
+        {
+            // empty strings are parsed as nulls -- want them to be treated as empty
+            if (string.IsNullOrEmpty(relativePathToDirectory))
+            {
+                relativePathToDirectory = "";
+            }
+
+            return Path.GetFullPath(Path.Join(server_path, relativePathToDirectory));
+        }
+
+        private string GetAbsoluteFilePath(string relativePathToDirectory, string fileName)
+        {
+            // empty strings are parsed as nulls -- want them to be treated as empty
+            if (string.IsNullOrEmpty(relativePathToDirectory))
+            {
+                relativePathToDirectory = "";
+            }
+
+            return Path.GetFullPath(Path.Join(server_path, relativePathToDirectory, fileName));
+        }
+
+        private bool ResolvedPathIsValid(string absolutePath)
+        {
+            return absolutePath.StartsWith(server_path);
         }
     }
 
