@@ -28,12 +28,12 @@ namespace maplarge_restapicore.controllers
             var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToDirectory));
             if (!resolvedPath.StartsWith(server_path)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
 
             if (!Directory.Exists(resolvedPath)) 
             {
-                return StatusCode(404);
+                return NotFound();
             }
 
             return FileHelper.GetDirectoryInfo(relativePathToDirectory, resolvedPath);
@@ -47,11 +47,11 @@ namespace maplarge_restapicore.controllers
             var resolvedPath = Path.GetFullPath(Path.Combine(server_path, relativePathToFile));
             if (!resolvedPath.StartsWith(server_path)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
 
             if (!System.IO.File.Exists(resolvedPath)) {
-                return StatusCode(404);
+                return NotFound();
             }
 
             var memory = new MemoryStream();  
@@ -66,14 +66,34 @@ namespace maplarge_restapicore.controllers
         [HttpPost]
         public async Task<ActionResult<ApiFile>> Upload([FromForm] ApiUploadFile upload)
         {
-            if (upload == null || string.IsNullOrEmpty(upload.RelativePathToDirectory) || upload.Files == null || upload.Files.Count() == 0) {
+            if (upload == null || upload.Files == null || upload.Files.Count() == 0) {
                 return BadRequest();
+            }
+
+            if (string.IsNullOrEmpty(upload.RelativePathToDirectory))
+            {
+                upload.RelativePathToDirectory = "";
             }
 
             var resolvedPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory));
             if (!resolvedPath.StartsWith(server_path)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+            foreach (var formFile in upload.Files) 
+            {
+                var fullDestPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory, formFile.FileName));
+
+                if (!fullDestPath.StartsWith(server_path)) {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+
+                if (System.IO.File.Exists(fullDestPath))
+                {
+                    return StatusCode(StatusCodes.Status409Conflict);
+                }
             }
 
             // https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-2.2
@@ -90,6 +110,10 @@ namespace maplarge_restapicore.controllers
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
+
+                        var fullDestPath = Path.GetFullPath(Path.Combine(server_path, upload.RelativePathToDirectory, formFile.FileName));
+
+                        System.IO.File.Move(filePath, fullDestPath);
                     }
                 }
             }
