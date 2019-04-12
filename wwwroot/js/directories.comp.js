@@ -28,8 +28,14 @@ export default class DirectoriesComponent extends HTMLElement {
         this._update();
     }
 
-    HandleDelete(e, relativePath, fileName) {
-        this.fileService.Delete(relativePath, fileName);
+    HandleDelete(e, relativePath, fileName, subDirName) {
+        if (subDirName) {
+            let path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
+            this.fileService.Delete(path, null);
+        } else {
+            let path = relativePath ? relativePath : ``;
+            this.fileService.Delete(path, fileName);
+        }
     }
 
     async _update() {
@@ -50,7 +56,7 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, null) }}>Delete</button></td>
+                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, null, dir) }}>Delete</button></td>
                     </tr>
                 `)}
                 ${directory.files.map((file) => html`
@@ -59,7 +65,7 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td>${file.sizeBytes}</td>
                         <td>${new Date(file.dateCreated).toLocaleDateString()}</td>
                         <td>${new Date(file.dateModified).toLocaleDateString()}</td>
-                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, file.name) }}>Delete</button></td>
+                        <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, file.name, null) }}>Delete</button></td>
                     </tr>
                 `)}
                 </tbody>

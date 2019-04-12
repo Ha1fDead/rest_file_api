@@ -130,7 +130,20 @@ namespace maplarge_restapicore.controllers
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                // deleting a directory
+                var fullDestPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                if (!ResolvedPathIsValid(fullDestPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                
+                if (!Directory.Exists(fullDestPath))
+                {
+                    return NotFound();
+                }
+
+                Directory.Delete(fullDestPath);
+                return Ok();
             }
             else
             {
@@ -149,8 +162,6 @@ namespace maplarge_restapicore.controllers
                 System.IO.File.Delete(fullDestPath);
                 return Ok();
             }
-
-            return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
 
         [HttpPut]

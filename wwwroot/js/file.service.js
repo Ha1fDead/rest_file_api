@@ -50,7 +50,7 @@
 
     // xtra
     async Delete(relativePathToDirectory, fileName) {
-        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}`, {
+        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}`, {
             method: 'delete'
         });
 
