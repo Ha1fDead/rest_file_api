@@ -134,8 +134,20 @@ namespace maplarge_restapicore.controllers
             }
             else
             {
-                // deleting a file
-                // var 
+                var fullDestPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+                if (!ResolvedPathIsValid(fullDestPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                
+                if (!System.IO.File.Exists(fullDestPath))
+                {
+                    return NotFound();
+                }
+
+                System.IO.File.Delete(fullDestPath);
+                return Ok();
             }
 
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
