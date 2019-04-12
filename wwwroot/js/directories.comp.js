@@ -72,12 +72,8 @@ export default class DirectoriesComponent extends HTMLElement {
             </table>
         `;
 
-        // Todo -- move this to invert it
         let directory = await this.fileService.GetDirectory(this.fileService.GetCurrentRelativePath());
-        console.log(directory);
-        console.log(this);
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));
-        console.log('rendered');
     }
 
     generateLinkToDirectory(relativePath, subDirectory) {
@@ -85,7 +81,6 @@ export default class DirectoriesComponent extends HTMLElement {
     }
 
     generateLinkToFile(relativePath, fileName) {
-        // todo -- friendify filename and relative path
         return `/api/file/download/${relativePath ? `${relativePath}/` : ``}${fileName}`;
     } 
 }

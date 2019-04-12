@@ -43,6 +43,10 @@ export default class PathMapComponent extends HTMLElement {
     }
 
     splitStringIntoParts(str, delimiter) {
+        if (str == null) {
+            return [];
+        }
+        
         let split = str.split(delimiter);
         let parts = [];
         for (let x = 0; x < split.length; x++) {
