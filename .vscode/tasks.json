@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/maplarge_restapicore.csproj"
+                "${workspaceFolder}/rest_file_api.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/maplarge_restapicore.csproj"
+                "${workspaceFolder}/rest_file_api.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/maplarge_restapicore.csproj"
+                "${workspaceFolder}/rest_file_api.csproj"
             ],
             "problemMatcher": "$tsc"
         }
