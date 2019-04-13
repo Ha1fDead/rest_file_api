@@ -44,8 +44,12 @@
     }
 
     // xtra
-    async Move() {
+    async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
+        let res = await fetch(`/api/file/move?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&relativePathToDestDirectory=${relativePathToDestDirectory}`, {
+            method: 'put'
+        });
 
+        console.log('made move request', res);
     }
 
     // xtra

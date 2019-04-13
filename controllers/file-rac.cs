@@ -24,7 +24,7 @@ namespace maplarge_restapicore.controllers
             var resolvedPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
             if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(StatusCodes.Status403Forbidden);
+                return Forbid();
             }
 
             if (!Directory.Exists(resolvedPath)) 
@@ -44,7 +44,7 @@ namespace maplarge_restapicore.controllers
             var resolvedPath = this.GetAbsoluteFilePath("", relativePathToFile);
             if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(StatusCodes.Status403Forbidden);
+                return Forbid();
             }
 
             if (!System.IO.File.Exists(resolvedPath)) {
@@ -70,7 +70,7 @@ namespace maplarge_restapicore.controllers
             var resolvedPath = this.GetAbsoluteDirectoryPath(upload.RelativePathToDirectory);
             if (!this.ResolvedPathIsValid(resolvedPath)) {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(StatusCodes.Status403Forbidden);
+                return Forbid();
             }
 
             foreach (var formFile in upload.Files) 
@@ -78,12 +78,12 @@ namespace maplarge_restapicore.controllers
                 var fullDestPath = this.GetAbsoluteFilePath(upload.RelativePathToDirectory, formFile.FileName);
                 if (!this.ResolvedPathIsValid(fullDestPath)) {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return StatusCode(StatusCodes.Status403Forbidden);
+                    return Forbid();
                 }
 
                 if (System.IO.File.Exists(fullDestPath))
                 {
-                    return StatusCode(StatusCodes.Status409Conflict);
+                    return Conflict();
                 }
             }
 
@@ -134,7 +134,7 @@ namespace maplarge_restapicore.controllers
                 if (!ResolvedPathIsValid(fullDestPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return StatusCode(StatusCodes.Status403Forbidden);
+                    return Forbid();
                 }
                 
                 if (!Directory.Exists(fullDestPath))
@@ -151,7 +151,7 @@ namespace maplarge_restapicore.controllers
                 if (!ResolvedPathIsValid(fullDestPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return StatusCode(StatusCodes.Status403Forbidden);
+                    return Forbid();
                 }
                 
                 if (!System.IO.File.Exists(fullDestPath))
@@ -167,9 +167,34 @@ namespace maplarge_restapicore.controllers
         [HttpPut]
         [Route("move")]
         // Extra
-        public async Task<ActionResult> MoveFile(string file_to_move, string relativePathToDirectory)
+        public async Task<ActionResult> MoveFile(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
         {
-            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+            if (!ResolvedPathIsValid(fullOriginalPath))
+            {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return Forbid();
+            }
+
+            var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDestDirectory, fileName);
+            if (!ResolvedPathIsValid(fullDestinationPath))
+            {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return Forbid();
+            }
+
+            if (!System.IO.File.Exists(fullOriginalPath))
+            {
+                return NotFound();
+            }
+
+            if (System.IO.File.Exists(fullDestinationPath))
+            {
+                return Conflict();
+            }
+
+            System.IO.File.Move(fullOriginalPath, fullDestinationPath);
+            return Ok();
         }
 
         [HttpPut]
