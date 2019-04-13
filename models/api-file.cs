@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace maplarge_restapicore.models
+namespace rest_file_api.models
 {
     public class ApiFile {
         /// Name of the file

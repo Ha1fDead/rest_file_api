@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace maplarge_restapicore.models
+namespace rest_file_api.models
 {
     public class ApiDirectory {
         /// Name of the Directory

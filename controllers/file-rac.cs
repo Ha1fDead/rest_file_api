@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using maplarge_restapicore.models;
+using rest_file_api.models;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 
-namespace maplarge_restapicore.controllers
+namespace rest_file_api.controllers
 {
 
     [Produces("application/json")]
