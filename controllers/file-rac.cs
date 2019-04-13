@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using maplarge_restapicore.models;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
 namespace maplarge_restapicore.controllers
 {
@@ -17,27 +18,32 @@ namespace maplarge_restapicore.controllers
     public class FileController : ControllerBase
     {
         private readonly IConfiguration _config;
-        public FileController(IConfiguration config)
+        private readonly IFileProvider _fileProvider;
+
+        public FileController(
+            IConfiguration config,
+            IFileProvider fileProvider)
         {
             _config = config;
+            _fileProvider = fileProvider;
         }
         
         [HttpGet]
         [Route("")]
         public async Task<ActionResult<ApiDirectory>> Get(string relativePathToDirectory)
         {
-            var resolvedPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
-            if (!this.ResolvedPathIsValid(resolvedPath)) {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+            if (string.IsNullOrEmpty(relativePathToDirectory))
+            {
+                relativePathToDirectory = "";
             }
 
-            if (!Directory.Exists(resolvedPath)) 
+            var directoryInfo = _fileProvider.GetDirectoryContents(relativePathToDirectory);
+            if (!directoryInfo.Exists) 
             {
                 return NotFound();
             }
 
-            return FileHelper.GetDirectoryInfo(relativePathToDirectory, resolvedPath);
+            return FileHelper.GetDirectoryInfo(directoryInfo, relativePathToDirectory);
         }
 
         [HttpGet]
@@ -52,17 +58,18 @@ namespace maplarge_restapicore.controllers
                 return Forbid();
             }
 
-            if (!System.IO.File.Exists(resolvedPath)) {
+            var fileInfo = _fileProvider.GetFileInfo(resolvedPath);
+            if (!fileInfo.Exists) {
                 return NotFound();
             }
 
             var memory = new MemoryStream();  
-            using (var stream = new FileStream(resolvedPath, FileMode.Open))
+            using (var stream = fileInfo.CreateReadStream())
             {
                 await stream.CopyToAsync(memory);  
             }
             memory.Position = 0;
-            return File(memory, "application/octet-stream", Path.GetFileName(resolvedPath));
+            return File(memory, "application/octet-stream", fileInfo.Name);
         }
 
         [HttpPost]
@@ -265,36 +272,35 @@ namespace maplarge_restapicore.controllers
 
     public static class FileHelper
     {
-        public static ApiDirectory GetDirectoryInfo(string relativePathToDirectory, string resolvedPath)
+        public static ApiDirectory GetDirectoryInfo(IDirectoryContents directory, string relativePathToDirectory)
         {
-            return GetDirectoryInfo(relativePathToDirectory, new DirectoryInfo(resolvedPath));
-        }
-
-        public static ApiDirectory GetDirectoryInfo(string relativePathToDirectory, DirectoryInfo info)
-        {
-            var allfiles = new List<ApiFile>();
-            foreach(var file in info.GetFiles())
+            var subdir = new List<string>();
+            var files = new List<ApiFile>();
+            foreach (var file in directory)
             {
-                allfiles.Add(GetFileInfo(file));
+                if (file.IsDirectory)
+                {
+                    subdir.Add(file.Name);
+                }
+                else
+                {
+                    files.Add(new ApiFile()
+                    {
+                        Name = file.Name,
+                        SizeBytes = file.Length,
+                        DateModified = file.LastModified.DateTime,
+                        DateCreated = File.GetCreationTimeUtc(file.PhysicalPath)
+                    });
+                }
             }
-
-            Console.WriteLine(allfiles.Count);
-
-            var allDirectories = new List<string>();
-            foreach(var dir in info.GetDirectories())
+            var apiDirectory = new ApiDirectory()
             {
-                allDirectories.Add(dir.Name);
-            }
-
-            var directory = new ApiDirectory
-            {
-                Name = info.Name,
+                Name = Path.GetFileName(relativePathToDirectory),
                 RelativePath = relativePathToDirectory,
-                Files = allfiles,
-                SubDirectories = allDirectories
+                SubDirectories = subdir,
+                Files = files
             };
-
-            return directory;
+            return apiDirectory;
         }
 
         public static ApiFile GetFileInfo(FileInfo info)
