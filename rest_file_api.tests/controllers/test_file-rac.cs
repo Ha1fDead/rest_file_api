@@ -1,19 +1,26 @@
 using System;
 using Xunit;
 using rest_file_api.controllers;
+using Moq;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace rest_file_api.tests.controllers
 {
     public class FileRestApiController
     {
         [Fact]
-        public void Get_DirectoryDoesntExist_NotFound()
+        public async Task Get_DirectoryDoesntExist_NotFoundAsync()
         {
             // arrange
+            var mockFileProvider = new Mock<IFileProvider>();
+            var mockConfigProvider = new Mock<IConfiguration>();
 
+            var sut = new FileController(mockConfigProvider.Object, mockFileProvider.Object);
 
             // act
-            // var sut = new FileController();
+            var directory = await sut.Get("this/does/not/exist");
 
             // assert
             Assert.True(false);

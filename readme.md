@@ -19,6 +19,12 @@ The client should...
 - Be deep-linkable (state stored in URL)
 - Be a SPA
 
+## Testing
+
+Run `dotnet test` from the solution directory or the tests project.
+
+Or install [NET Core Test Explorer](https://marketplace.visualstudio.com/items?itemName=formulahendry.dotnet-test-explorer)
+
 ## Architecture
 
 To automate client-side rendering & templating, I used [lit-html](https://lit-html.polymer-project.org). I like web components.
