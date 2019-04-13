@@ -51,14 +51,12 @@ namespace maplarge_restapicore.controllers
         [Route("download/{*relativePathToFile}")]
         public async Task<ActionResult> Download(string relativePathToFile)
         {
-            // Client already formats path so users see a "Clean" url
-            var resolvedPath = this.GetAbsoluteFilePath("", relativePathToFile);
-            if (!this.ResolvedPathIsValid(resolvedPath)) {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+            if (string.IsNullOrEmpty(relativePathToFile))
+            {
+                return BadRequest();
             }
-
-            var fileInfo = _fileProvider.GetFileInfo(resolvedPath);
+            
+            var fileInfo = _fileProvider.GetFileInfo(relativePathToFile);
             if (!fileInfo.Exists) {
                 return NotFound();
             }
