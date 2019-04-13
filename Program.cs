@@ -12,6 +12,10 @@ namespace maplarge_restapicore
 {
     public class Program
     {
+        private static Dictionary<string, string> appConfig = new Dictionary<string, string>()
+        {
+            {"root_server_directory", "/home/lafferty/Downloads"}
+        };
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
@@ -19,6 +23,9 @@ namespace maplarge_restapicore
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) => {
+                    config.AddInMemoryCollection(appConfig);
+                })
                 .UseStartup<Startup>();
     }
 }

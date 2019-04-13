@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using maplarge_restapicore.models;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace maplarge_restapicore.controllers
 {
@@ -15,7 +16,11 @@ namespace maplarge_restapicore.controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        public readonly string server_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        private readonly IConfiguration _config;
+        public FileController(IConfiguration config)
+        {
+            _config = config;
+        }
         
         [HttpGet]
         [Route("")]
@@ -238,7 +243,7 @@ namespace maplarge_restapicore.controllers
                 relativePathToDirectory = "";
             }
 
-            return Path.GetFullPath(Path.Join(server_path, relativePathToDirectory));
+            return Path.GetFullPath(Path.Join(_config["root_server_directory"], relativePathToDirectory));
         }
 
         private string GetAbsoluteFilePath(string relativePathToDirectory, string fileName)
@@ -249,12 +254,12 @@ namespace maplarge_restapicore.controllers
                 relativePathToDirectory = "";
             }
 
-            return Path.GetFullPath(Path.Join(server_path, relativePathToDirectory, fileName));
+            return Path.GetFullPath(Path.Join(_config["root_server_directory"], relativePathToDirectory, fileName));
         }
 
         private bool ResolvedPathIsValid(string absolutePath)
         {
-            return absolutePath.StartsWith(server_path);
+            return absolutePath.StartsWith(_config["root_server_directory"]);
         }
     }
 
