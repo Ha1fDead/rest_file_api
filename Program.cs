@@ -14,7 +14,7 @@ namespace maplarge_restapicore
     {
         private static Dictionary<string, string> appConfig = new Dictionary<string, string>()
         {
-            {"root_server_directory", "/home/lafferty/Downloads"}
+            {"root_server_directory", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}
         };
         public static void Main(string[] args)
         {
