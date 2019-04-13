@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace maplarge_restapicore
@@ -15,6 +16,7 @@ namespace maplarge_restapicore
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
             services.AddMvc();
         }
 
@@ -26,6 +28,7 @@ namespace maplarge_restapicore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseResponseCompression();
             app.UseMvc();
             app.UseStatusCodePagesWithReExecute("/");
             app.UseDefaultFiles();
