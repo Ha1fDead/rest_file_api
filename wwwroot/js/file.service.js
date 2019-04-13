@@ -39,8 +39,12 @@
     }
 
     // xtra
-    async Copy() {
+    async Copy(relativePathToDirectory, fileName, copyName) {
+        let res = await fetch(`/api/file/copy?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&copyName=${copyName}`, {
+            method: 'put'
+        });
 
+        console.log('made move request', res);
     }
 
     // xtra

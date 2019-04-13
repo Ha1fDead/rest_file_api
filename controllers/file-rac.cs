@@ -200,9 +200,34 @@ namespace maplarge_restapicore.controllers
         [HttpPut]
         [Route("copy")]
         // Extra
-        public async Task<ActionResult> CopyFile(string relativePathToDirectory, string file_to_copy, string name_of_copy)
+        public async Task<ActionResult> CopyFile(string relativePathToDirectory, string fileName, string copyName)
         {
-            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+            var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+            if (!ResolvedPathIsValid(fullOriginalPath))
+            {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return Forbid();
+            }
+
+            var fullCopyDestination = this.GetAbsoluteFilePath(relativePathToDirectory, copyName);
+            if (!ResolvedPathIsValid(fullCopyDestination))
+            {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return Forbid();
+            }
+
+            if (!System.IO.File.Exists(fullOriginalPath))
+            {
+                return NotFound();
+            }
+
+            if (System.IO.File.Exists(fullCopyDestination))
+            {
+                return Conflict();
+            }
+
+            System.IO.File.Copy(fullOriginalPath, fullCopyDestination);
+            return Ok();
         }
 
         private string GetAbsoluteDirectoryPath(string relativePathToDirectory)
