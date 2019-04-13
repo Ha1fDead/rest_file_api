@@ -55,7 +55,7 @@ namespace maplarge_restapicore.controllers
             {
                 return BadRequest();
             }
-            
+
             var fileInfo = _fileProvider.GetFileInfo(relativePathToFile);
             if (!fileInfo.Exists) {
                 return NotFound();
@@ -77,50 +77,37 @@ namespace maplarge_restapicore.controllers
                 return BadRequest();
             }
 
-            var resolvedPath = this.GetAbsoluteDirectoryPath(upload.RelativePathToDirectory);
-            if (!this.ResolvedPathIsValid(resolvedPath)) {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+            if (string.IsNullOrEmpty(upload.RelativePathToDirectory))
+            {
+                upload.RelativePathToDirectory = "";
             }
 
             foreach (var formFile in upload.Files) 
             {
-                var fullDestPath = this.GetAbsoluteFilePath(upload.RelativePathToDirectory, formFile.FileName);
-                if (!this.ResolvedPathIsValid(fullDestPath)) {
-                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
-                }
-
-                if (System.IO.File.Exists(fullDestPath))
+                var fileInfo = _fileProvider.GetFileInfo(Path.Join(upload.RelativePathToDirectory, formFile.FileName));
+                if (fileInfo.Exists)
                 {
                     return Conflict();
                 }
             }
 
             // https://docs.microsoft.com/en-us/aspnet/core/mvc/models/file-uploads?view=aspnetcore-2.2
-            // ensure multiple people can upload file simultaneously
             long size = upload.Files.Sum(f => f.Length);
 
-            // full path to file in temp location
             var filePath = Path.GetTempFileName();
 
             foreach (var formFile in upload.Files)
             {
                 if (formFile.Length > 0)
                 {
+                    var fileInfo = _fileProvider.GetFileInfo(Path.Join(upload.RelativePathToDirectory, formFile.FileName));
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await formFile.CopyToAsync(stream);
-
-                        var fullDestPath = this.GetAbsoluteFilePath(upload.RelativePathToDirectory, formFile.FileName);
-
-                        System.IO.File.Move(filePath, fullDestPath);
                     }
+                    System.IO.File.Move(filePath, fileInfo.PhysicalPath);
                 }
             }
-
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
 
             return Ok(new { count = upload.Files.Count, size, filePath});
         }
@@ -138,6 +125,11 @@ namespace maplarge_restapicore.controllers
         // Extra
         public async Task<ActionResult> Delete(string relativePathToDirectory, string fileName)
         {
+            if (string.IsNullOrEmpty(relativePathToDirectory))
+            {
+                relativePathToDirectory = "";
+            }
+
             if (string.IsNullOrWhiteSpace(fileName))
             {
                 var fullDestPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
@@ -157,19 +149,13 @@ namespace maplarge_restapicore.controllers
             }
             else
             {
-                var fullDestPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
-                if (!ResolvedPathIsValid(fullDestPath))
-                {
-                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
-                }
-                
-                if (!System.IO.File.Exists(fullDestPath))
+                var fileInfo = _fileProvider.GetFileInfo(Path.Join(relativePathToDirectory, fileName));
+                if (!fileInfo.Exists)
                 {
                     return NotFound();
                 }
 
-                System.IO.File.Delete(fullDestPath);
+                System.IO.File.Delete(fileInfo.PhysicalPath);
                 return Ok();
             }
         }
@@ -299,19 +285,6 @@ namespace maplarge_restapicore.controllers
                 Files = files
             };
             return apiDirectory;
-        }
-
-        public static ApiFile GetFileInfo(FileInfo info)
-        {
-            var file = new ApiFile
-            {
-                Name = info.Name,
-                DateCreated = info.CreationTimeUtc,
-                DateModified = info.LastWriteTimeUtc,
-                SizeBytes = info.Length
-            };
-
-            return file;
         }
 
         // Oof directory walking can get complex. Mapping my home directory takes FOR-EH-VER
