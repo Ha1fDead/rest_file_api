@@ -14,7 +14,7 @@ namespace rest_file_api.tests.controllers
     public class FileRestApiController
     {
         [Fact]
-        public async Task Get_DirectoryDoesntExist_NotFoundAsync()
+        public void Get_DirectoryDoesntExist_NotFoundAsync()
         {
             // arrange
             const string path = "this/path/does/not/exist";
@@ -28,7 +28,7 @@ namespace rest_file_api.tests.controllers
             var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
-            var result = await sut.Get(path);
+            var result = sut.Get(path);
 
             // assert
             var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
@@ -36,7 +36,7 @@ namespace rest_file_api.tests.controllers
         }
 
         [Fact]
-        public async Task Get_NullDirectory_ReturnsRoot()
+        public void Get_NullDirectory_ReturnsRoot()
         {
             // arrange
             const string path = "";
@@ -51,7 +51,7 @@ namespace rest_file_api.tests.controllers
             var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
-            var result = await sut.Get(null);
+            var result = sut.Get(null);
 
             // assert
             var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
@@ -61,7 +61,7 @@ namespace rest_file_api.tests.controllers
 
 
         [Fact]
-        public async Task Get_DirectoryExists_ReturnsDirectory()
+        public void Get_DirectoryExists_ReturnsDirectory()
         {
             // arrange
             const string path = "this/path/exists";
@@ -76,7 +76,7 @@ namespace rest_file_api.tests.controllers
             var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
-            var result = await sut.Get(path);
+            var result = sut.Get(path);
 
             // assert
             var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);

@@ -30,7 +30,7 @@ namespace rest_file_api.controllers
         
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<ApiDirectory>> Get(string relativePathToDirectory)
+        public ActionResult<ApiDirectory> Get(string relativePathToDirectory)
         {
             if (string.IsNullOrEmpty(relativePathToDirectory))
             {
@@ -115,7 +115,7 @@ namespace rest_file_api.controllers
         [HttpGet]
         [Route("search/{filename}")]
         // Extra maybe?
-        public async Task<ActionResult> Search(string filename)
+        public ActionResult Search(string filename)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
@@ -123,7 +123,7 @@ namespace rest_file_api.controllers
         [HttpDelete]
         [Route("")]
         // Extra
-        public async Task<ActionResult> Delete(string relativePathToDirectory, string fileName)
+        public ActionResult Delete(string relativePathToDirectory, string fileName)
         {
             if (string.IsNullOrEmpty(relativePathToDirectory))
             {
@@ -163,7 +163,7 @@ namespace rest_file_api.controllers
         [HttpPut]
         [Route("move")]
         // Extra
-        public async Task<ActionResult> MoveFile(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
+        public ActionResult MoveFile(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
         {
             var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
             if (!ResolvedPathIsValid(fullOriginalPath))
@@ -196,7 +196,7 @@ namespace rest_file_api.controllers
         [HttpPut]
         [Route("copy")]
         // Extra
-        public async Task<ActionResult> CopyFile(string relativePathToDirectory, string fileName, string copyName)
+        public ActionResult CopyFile(string relativePathToDirectory, string fileName, string copyName)
         {
             var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
             if (!ResolvedPathIsValid(fullOriginalPath))
