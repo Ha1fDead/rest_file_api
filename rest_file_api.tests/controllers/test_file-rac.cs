@@ -5,6 +5,9 @@ using Moq;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using rest_file_api.models;
+using System.Collections.Generic;
 
 namespace rest_file_api.tests.controllers
 {
@@ -14,38 +17,50 @@ namespace rest_file_api.tests.controllers
         public async Task Get_DirectoryDoesntExist_NotFoundAsync()
         {
             // arrange
-            var mockFileProvider = new Mock<IFileProvider>();
+            const string path = "this/path/does/not/exist";
+            var stubFileProvider = new Mock<IFileProvider>();
+            var mockDirectory = new Mock<IDirectoryContents>();
+            mockDirectory.Setup(x => x.Exists).Returns(false);
+
+            stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
             var mockConfigProvider = new Mock<IConfiguration>();
 
-            var sut = new FileController(mockConfigProvider.Object, mockFileProvider.Object);
+            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
-            var directory = await sut.Get("this/does/not/exist");
+            var result = await sut.Get(path);
 
             // assert
-            Assert.True(false);
+            var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
+            Assert.IsAssignableFrom<NotFoundResult>(actionResult.Result);
         }
 
         [Fact]
-        public void Get_RelativePathGoesUp_DoesNotGoUp()
+        public async Task Get_DirectoryExists_ReturnsDirectory()
         {
-            Assert.True(false);
-        }
+            // arrange
+            const string path = "this/path/exists";
+            var stubFileProvider = new Mock<IFileProvider>();
+            var mockDirectory = new Mock<IDirectoryContents>();
+            mockDirectory.Setup(x => x.Exists).Returns(true);
+            mockDirectory.Setup(x => x.GetEnumerator()).Returns(new List<IFileInfo>().GetEnumerator());
 
-        [Fact]
-        public void Get_DirectoryExists_ReturnsDirectory()
-        {
-            Assert.True(false);
+            stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
+            var mockConfigProvider = new Mock<IConfiguration>();
+
+            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
+
+            // act
+            var result = await sut.Get(path);
+
+            // assert
+            var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
+            var apiResult = Assert.IsType<ApiDirectory>(actionResult.Value);
+            Assert.NotNull(apiResult);
         }
 
         [Fact]
         public void Download_FileDoesntExist_NotFound()
-        {
-            Assert.True(false);
-        }
-
-        [Fact]
-        public void Download_RelativePathGoesUp_DoesNotGoUp()
         {
             Assert.True(false);
         }
@@ -93,12 +108,6 @@ namespace rest_file_api.tests.controllers
         }
 
         [Fact]
-        public void Delete_RelativePathGoesUp_DoesNotGoUp()
-        {
-            Assert.True(false);
-        }
-
-        [Fact]
         public void Delete_Directory_Deletes()
         {
             Assert.True(false);
@@ -118,12 +127,6 @@ namespace rest_file_api.tests.controllers
 
         [Fact]
         public void Move_DirectoryDoesntExist_NotFound()
-        {
-            Assert.True(false);
-        }
-
-        [Fact]
-        public void Move_RelativePathGoesUp_DoesNotGoUp()
         {
             Assert.True(false);
         }
@@ -160,12 +163,6 @@ namespace rest_file_api.tests.controllers
 
         [Fact]
         public void Copy_DirectoryDoesntExist_NotFound()
-        {
-            Assert.True(false);
-        }
-
-        [Fact]
-        public void Copy_RelativePathGoesUp_DoesNotGoUp()
         {
             Assert.True(false);
         }
