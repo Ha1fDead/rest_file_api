@@ -36,6 +36,31 @@ namespace rest_file_api.tests.controllers
         }
 
         [Fact]
+        public async Task Get_NullDirectory_ReturnsRoot()
+        {
+            // arrange
+            const string path = "";
+            var stubFileProvider = new Mock<IFileProvider>();
+            var mockDirectory = new Mock<IDirectoryContents>();
+            mockDirectory.Setup(x => x.Exists).Returns(true);
+            mockDirectory.Setup(x => x.GetEnumerator()).Returns(new List<IFileInfo>().GetEnumerator());
+
+            stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
+            var mockConfigProvider = new Mock<IConfiguration>();
+
+            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
+
+            // act
+            var result = await sut.Get(null);
+
+            // assert
+            var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
+            var apiResult = Assert.IsType<ApiDirectory>(actionResult.Value);
+            Assert.NotNull(apiResult);
+        }
+
+
+        [Fact]
         public async Task Get_DirectoryExists_ReturnsDirectory()
         {
             // arrange
