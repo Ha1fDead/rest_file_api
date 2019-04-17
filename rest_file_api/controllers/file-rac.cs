@@ -165,68 +165,162 @@ namespace rest_file_api.controllers
         [HttpPut]
         [Route("move")]
         // Extra
-        public ActionResult MoveFile(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
+        public ActionResult Move(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
         {
-            var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
-            if (!ResolvedPathIsValid(fullOriginalPath))
+            if (string.IsNullOrEmpty(relativePathToDirectory))
             {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+                relativePathToDirectory = "";
             }
 
-            var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDestDirectory, fileName);
-            if (!ResolvedPathIsValid(fullDestinationPath))
+            if (string.IsNullOrEmpty(relativePathToDestDirectory))
             {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+                relativePathToDestDirectory = "";
             }
 
-            if (!System.IO.File.Exists(fullOriginalPath))
+            if (string.IsNullOrEmpty(fileName))
             {
-                return NotFound(new ApiError("The file you are requesting to move does not exist"));
-            }
+                // directory move
+                var fullOriginalPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                if (!ResolvedPathIsValid(fullOriginalPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
 
-            if (System.IO.File.Exists(fullDestinationPath))
+                var fullDestinationPath = this.GetAbsoluteDirectoryPath(relativePathToDestDirectory);
+                if (!ResolvedPathIsValid(fullDestinationPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                if (!System.IO.Directory.Exists(fullOriginalPath))
+                {
+                    return NotFound(new ApiError("The file you are requesting to move does not exist"));
+                }
+
+                if (System.IO.Directory.Exists(fullDestinationPath))
+                {
+                    // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                    return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
+                }
+
+                System.IO.Directory.Move(fullOriginalPath, fullDestinationPath);
+            }
+            else
             {
-                // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
-                return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
-            }
+                // file move
+                var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+                if (!ResolvedPathIsValid(fullOriginalPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
 
-            System.IO.File.Move(fullOriginalPath, fullDestinationPath);
+                var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDestDirectory, fileName);
+                if (!ResolvedPathIsValid(fullDestinationPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                if (!System.IO.File.Exists(fullOriginalPath))
+                {
+                    return NotFound(new ApiError("The file you are requesting to move does not exist"));
+                }
+
+                if (System.IO.File.Exists(fullDestinationPath))
+                {
+                    // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                    return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
+                }
+
+                System.IO.File.Move(fullOriginalPath, fullDestinationPath);
+            }
             return Ok();
         }
 
         [HttpPut]
         [Route("copy")]
         // Extra
-        public ActionResult CopyFile(string relativePathToDirectory, string fileName, string copyName)
+        public ActionResult Copy(string relativePathToDirectory, string fileName, string copyName)
         {
-            var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
-            if (!ResolvedPathIsValid(fullOriginalPath))
+            if (string.IsNullOrEmpty(relativePathToDirectory))
             {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+                relativePathToDirectory = "";
             }
 
-            var fullCopyDestination = this.GetAbsoluteFilePath(relativePathToDirectory, copyName);
-            if (!ResolvedPathIsValid(fullCopyDestination))
+            if (string.IsNullOrEmpty(fileName))
             {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return Forbid();
+                // directory move
+                if (string.IsNullOrEmpty(relativePathToDirectory))
+                {
+                    // You cannot copy the root directory
+                    return Forbid();
+                }
+                
+                var fullOriginalPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                if (!ResolvedPathIsValid(fullOriginalPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                // Directory copy needs to go to the current "Parent"
+                // So copying directory C to D with structure a/b/c/ would yield
+                // a/b/c
+                // a/b/d
+                var fullDestinationPath = this.GetAbsoluteDirectoryPath(Path.Join(relativePathToDirectory, "../", copyName));
+                if (!ResolvedPathIsValid(fullDestinationPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                if (!System.IO.Directory.Exists(fullOriginalPath))
+                {
+                    return NotFound(new ApiError("The file you are requesting to move does not exist"));
+                }
+
+                if (System.IO.Directory.Exists(fullDestinationPath))
+                {
+                    // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                    return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
+                }
+
+                FileHelper.DirectoryCopy(fullOriginalPath, fullDestinationPath);
+            }
+            else
+            {
+                // file move
+                var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+                if (!ResolvedPathIsValid(fullOriginalPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDirectory, copyName);
+                if (!ResolvedPathIsValid(fullDestinationPath))
+                {
+                    // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                    return Forbid();
+                }
+
+                if (!System.IO.File.Exists(fullOriginalPath))
+                {
+                    return NotFound(new ApiError("The file you are requesting to move does not exist"));
+                }
+
+                if (System.IO.File.Exists(fullDestinationPath))
+                {
+                    // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                    return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
+                }
+
+                System.IO.File.Copy(fullOriginalPath, fullDestinationPath);
             }
 
-            if (!System.IO.File.Exists(fullOriginalPath))
-            {
-                return NotFound(new ApiError("The file you are attempting to copy does not exist"));
-            }
-
-            if (System.IO.File.Exists(fullCopyDestination))
-            {
-                // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
-                return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
-            }
-
-            System.IO.File.Copy(fullOriginalPath, fullCopyDestination);
             return Ok();
         }
 
@@ -309,6 +403,42 @@ namespace rest_file_api.controllers
                 size += DirSizeRecursive(di);   
             }
             return size;  
+        }
+        
+
+        // https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        public static void DirectoryCopy(string sourceDirName, string destDirName)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirName);
+            }
+
+            DirectoryInfo[] dirs = dir.GetDirectories();
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destDirName))
+            {
+                Directory.CreateDirectory(destDirName);
+            }
+            
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string temppath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(temppath, false);
+            }
+
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                string temppath = Path.Combine(destDirName, subdir.Name);
+                DirectoryCopy(subdir.FullName, temppath);
+            }
         }
     }
 }
