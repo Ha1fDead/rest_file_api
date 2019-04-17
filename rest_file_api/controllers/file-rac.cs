@@ -40,7 +40,7 @@ namespace rest_file_api.controllers
             var directoryInfo = _fileProvider.GetDirectoryContents(relativePathToDirectory);
             if (!directoryInfo.Exists) 
             {
-                return NotFound();
+                return NotFound(new ApiError("The directory requested does not exist"));
             }
 
             return FileHelper.GetDirectoryInfo(directoryInfo, relativePathToDirectory);
@@ -53,12 +53,13 @@ namespace rest_file_api.controllers
         {
             if (string.IsNullOrEmpty(relativePathToFile))
             {
-                return BadRequest();
+                return BadRequest(new ApiError("You must specify a valid path to the file"));
             }
 
             var fileInfo = _fileProvider.GetFileInfo(relativePathToFile);
-            if (!fileInfo.Exists) {
-                return NotFound();
+            if (!fileInfo.Exists)
+            {
+                return NotFound(new ApiError("The file you requested to download does not exist or the path is invalid"));
             }
 
             var memory = new MemoryStream();  
@@ -74,7 +75,7 @@ namespace rest_file_api.controllers
         public async Task<ActionResult<ApiFile>> Upload([FromForm] ApiUploadFile upload)
         {
             if (upload == null || upload.Files == null || upload.Files.Count() == 0) {
-                return BadRequest();
+                return BadRequest(new ApiError("You must specify a file to be uploaded"));
             }
 
             if (string.IsNullOrEmpty(upload.RelativePathToDirectory))
@@ -87,7 +88,8 @@ namespace rest_file_api.controllers
                 var fileInfo = _fileProvider.GetFileInfo(Path.Join(upload.RelativePathToDirectory, formFile.FileName));
                 if (fileInfo.Exists)
                 {
-                    return Conflict();
+                    // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                    return Conflict(new ApiError("You are attempted to upload a file that already exists. Delete the file and try again"));
                 }
             }
 
@@ -141,7 +143,7 @@ namespace rest_file_api.controllers
                 
                 if (!Directory.Exists(fullDestPath))
                 {
-                    return NotFound();
+                    return NotFound(new ApiError("The file you are requesting to delete does not exist"));
                 }
 
                 Directory.Delete(fullDestPath);
@@ -152,7 +154,7 @@ namespace rest_file_api.controllers
                 var fileInfo = _fileProvider.GetFileInfo(Path.Join(relativePathToDirectory, fileName));
                 if (!fileInfo.Exists)
                 {
-                    return NotFound();
+                    return NotFound(new ApiError("The directory you are requesting to delete does not exist"));
                 }
 
                 System.IO.File.Delete(fileInfo.PhysicalPath);
@@ -181,12 +183,13 @@ namespace rest_file_api.controllers
 
             if (!System.IO.File.Exists(fullOriginalPath))
             {
-                return NotFound();
+                return NotFound(new ApiError("The file you are requesting to move does not exist"));
             }
 
             if (System.IO.File.Exists(fullDestinationPath))
             {
-                return Conflict();
+                // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
             }
 
             System.IO.File.Move(fullOriginalPath, fullDestinationPath);
@@ -214,12 +217,13 @@ namespace rest_file_api.controllers
 
             if (!System.IO.File.Exists(fullOriginalPath))
             {
-                return NotFound();
+                return NotFound(new ApiError("The file you are attempting to copy does not exist"));
             }
 
             if (System.IO.File.Exists(fullCopyDestination))
             {
-                return Conflict();
+                // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
+                return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
             }
 
             System.IO.File.Copy(fullOriginalPath, fullCopyDestination);
