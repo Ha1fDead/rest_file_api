@@ -84,7 +84,7 @@
      * @param {string} relativePathToDestDirectory 
      */
     async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
-        let res = await fetch(`/api/file/move?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&relativePathToDestDirectory=${relativePathToDestDirectory}`, {
+        let res = await fetch(`/api/file/move?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}&relativePathToDestDirectory=${relativePathToDestDirectory}`, {
             method: 'put'
         }).catch(this._HandleNetworkError);
 

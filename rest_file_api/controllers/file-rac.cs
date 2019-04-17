@@ -177,6 +177,18 @@ namespace rest_file_api.controllers
                 relativePathToDestDirectory = "";
             }
 
+            var absoluteDestinationDirectory = this.GetAbsoluteDirectoryPath(relativePathToDestDirectory);
+            if (!ResolvedPathIsValid(absoluteDestinationDirectory))
+            {
+                // User may be attempting to view "Up" directories -- app should only let people view "Down"
+                return StatusCode(403);
+            }
+
+            if (!System.IO.Directory.Exists(absoluteDestinationDirectory))
+            {
+                return NotFound(new ApiError("The directory you are trying to move the file to does not exist"));
+            }
+
             if (string.IsNullOrEmpty(fileName))
             {
                 // directory move

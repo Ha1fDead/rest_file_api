@@ -60,6 +60,22 @@ export default class DirectoriesComponent extends HTMLElement {
         }
     }
 
+    HandleMove(e, relativePath, fileName, subDirName) {
+        if (subDirName) {
+            let path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
+            this.fileService.Move(path, null, path + '1').catch((err) => {
+                alert(err);
+            });
+        } else {
+            let path = relativePath ? relativePath : ``;
+            this.fileService.Move(path, fileName, path + '1').then((res) => {
+                alert('success');
+            }, (err) => {
+                alert(err);
+            });
+        }
+    }
+
     async _update() {
         let directoriesTemplate = (directory) => html`
             <table>
@@ -80,6 +96,7 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td></td>
                         <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, null, dir) }}>Delete</button></td>
                         <td><button @click=${e => { this.HandleCopy(e, directory.relativePath, null, dir)}}>Copy</button></td>
+                        <td><button @click=${e => { this.HandleMove(e, directory.relativePath, null, dir)}}>Move</button></td>
                     </tr>
                 `)}
                 ${directory.files.map((file) => html`
@@ -90,6 +107,7 @@ export default class DirectoriesComponent extends HTMLElement {
                         <td>${new Date(file.dateModified).toLocaleDateString()}</td>
                         <td><button @click=${e => { this.HandleDelete(e, directory.relativePath, file.name, null) }}>Delete</button></td>
                         <td><button @click=${e => { this.HandleCopy(e, directory.relativePath, file.name, null) }}>Copy</button></td>
+                        <td><button @click=${e => { this.HandleMove(e, directory.relativePath, file.name, null) }}>Move</button></td>
                     </tr>
                 `)}
                 </tbody>
