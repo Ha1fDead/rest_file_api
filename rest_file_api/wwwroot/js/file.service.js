@@ -65,7 +65,7 @@
      * @param {string} copyName 
      */
     async Copy(relativePathToDirectory, fileName, copyName) {
-        let res = await fetch(`/api/file/copy?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&copyName=${copyName}`, {
+        let res = await fetch(`/api/file/copy?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}&copyName=${copyName}`, {
             method: 'put'
         }).catch(this._HandleNetworkError);
 
