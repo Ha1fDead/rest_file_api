@@ -16,7 +16,13 @@
             relativePathToDirectory = "";
         }
 
-        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}`);
+        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}`)
+            .catch(this._HandleNetworkError);
+
+        if (!res.ok) {
+            return this._HandleApplicationError(res);
+        }
+        
         let data = await res.json();
         return data;
     }
@@ -36,10 +42,15 @@
 
         let res = await fetch('/api/file', {
             method: 'post',
-            body: data,
-            credentials: "include",
-            mode: "cors"
-        });
+            body: data
+        }).catch(this._HandleNetworkError);
+
+        if (!res.ok) {
+            return this._HandleApplicationError(res);
+        }
+
+        // operation was successful
+        return Promise.resolve();
     }
 
     // optional ?
@@ -56,9 +67,14 @@
     async Copy(relativePathToDirectory, fileName, copyName) {
         let res = await fetch(`/api/file/copy?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&copyName=${copyName}`, {
             method: 'put'
-        });
+        }).catch(this._HandleNetworkError);
 
-        console.log('made move request', res);
+        if (!res.ok) {
+            return this._HandleApplicationError(res);
+        }
+
+        // operation was successful
+        return Promise.resolve();
     }
 
     /**
@@ -70,9 +86,14 @@
     async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
         let res = await fetch(`/api/file/move?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName}&relativePathToDestDirectory=${relativePathToDestDirectory}`, {
             method: 'put'
-        });
+        }).catch(this._HandleNetworkError);
 
-        console.log('made move request', res);
+        if (!res.ok) {
+            return this._HandleApplicationError(res);
+        }
+
+        // operation was successful
+        return Promise.resolve();
     }
 
     /**
@@ -84,24 +105,40 @@
     async Delete(relativePathToDirectory, fileName) {
         let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}`, {
             method: 'delete'
-        }).catch((networkerror) => {
-            // swallow error
-            return Promise.reject("There was an unexpected problem with your network. Please try again.");
-        });
+        }).catch(this._HandleNetworkError);
 
         if (!res.ok) {
-            // something wrong with the request
-            let body = await res.text();
-            if (body.length == 0) {
-                // no message from server -- we have nothing useful to tell the user
-                return Promise.reject("There was an unexpected problem handling your request. Please try again.");
-            }
-            console.log(body);
-            let obj = JSON.parse(body);
-            return Promise.reject(obj.message);
+            return this._HandleApplicationError(res);
         }
 
         // operation was successful
         return Promise.resolve();
+    }
+
+    /**
+     * Handles all application errors from server
+     * @param {Response} response from the server
+     * @returns {Promise<void, string>} a rejected promise with a message to display to users
+     */
+    async _HandleApplicationError(response) {
+        // something wrong with the request
+        let body = await response.text();
+        if (body.length == 0) {
+            // no message from server -- we have nothing useful to tell the user
+            return Promise.reject("There was an unexpected problem handling your request. Please try again.");
+        }
+        
+        let errorObject = JSON.parse(body);
+        return Promise.reject(errorObject.message);
+    }
+
+    /**
+     * 
+     * @param {Error} networkerror 
+     */
+    _HandleNetworkError(networkerror) {
+        // swallow error. In a "Real" application we would display a notification telling the user that they're offline
+        // we would also auto discover reconnect
+        return Promise.reject("There was an unexpected problem with your network. Please try again.");
     }
 }
