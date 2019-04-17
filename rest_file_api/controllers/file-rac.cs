@@ -138,7 +138,7 @@ namespace rest_file_api.controllers
                 if (!ResolvedPathIsValid(fullDestPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
                 
                 if (!Directory.Exists(fullDestPath))
@@ -184,14 +184,14 @@ namespace rest_file_api.controllers
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 var fullDestinationPath = this.GetAbsoluteDirectoryPath(relativePathToDestDirectory);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 if (!System.IO.Directory.Exists(fullOriginalPath))
@@ -214,14 +214,14 @@ namespace rest_file_api.controllers
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDestDirectory, fileName);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 if (!System.IO.File.Exists(fullOriginalPath))
@@ -256,14 +256,14 @@ namespace rest_file_api.controllers
                 if (string.IsNullOrEmpty(relativePathToDirectory))
                 {
                     // You cannot copy the root directory
-                    return Forbid();
+                    return StatusCode(403);
                 }
                 
                 var fullOriginalPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 // Directory copy needs to go to the current "Parent"
@@ -274,7 +274,7 @@ namespace rest_file_api.controllers
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 if (!System.IO.Directory.Exists(fullOriginalPath))
@@ -297,14 +297,14 @@ namespace rest_file_api.controllers
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDirectory, copyName);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                    return Forbid();
+                    return StatusCode(403);
                 }
 
                 if (!System.IO.File.Exists(fullOriginalPath))
