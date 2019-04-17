@@ -146,7 +146,7 @@ namespace rest_file_api.controllers
                     return NotFound(new ApiError("The file you are requesting to delete does not exist"));
                 }
 
-                Directory.Delete(fullDestPath);
+                Directory.Delete(fullDestPath, true);
                 return Ok();
             }
             else
