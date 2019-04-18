@@ -97,7 +97,8 @@ export default class PathMapComponent extends HTMLElement {
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
         history.pushState({}, directoryName, relativeDirectory);
-        this._update();
+        var popStateEvent = new PopStateEvent('popstate', { state: {} });
+        dispatchEvent(popStateEvent);
         return false;
     }
 

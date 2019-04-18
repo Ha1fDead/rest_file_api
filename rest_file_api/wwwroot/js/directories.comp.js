@@ -13,8 +13,6 @@ style.textContent = `
 `;
 
 export default class DirectoriesComponent extends HTMLElement {
-
-
     constructor() {
         super();
 
@@ -42,6 +40,8 @@ export default class DirectoriesComponent extends HTMLElement {
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
         history.pushState({}, directoryName, relativeDirectory);
+        var popStateEvent = new PopStateEvent('popstate', { state: {} });
+        dispatchEvent(popStateEvent);
         this._update();
         return false;
         // an alternative approach would be to use webworkers that can intercept all http requests
