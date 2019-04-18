@@ -23,12 +23,45 @@ export default class DirectoriesComponent extends HTMLElement {
 
         this._wrapper = template.content.cloneNode(true);
         shadow.appendChild(this._wrapper);
-        this._update();
-        window.addEventListener('popstate', event => {
-            // Known limitation -- if user manually enters a URL we cannot intercept that
-            // Apparently not even Angular does it, which is fascinating!
-            this._update();
-        }, false);
+    }
+
+    static get observedAttributes() {
+        return ["directory"];
+    }
+
+    /**
+     * The Directory that this component is going to display
+     * 
+     * @param {object} value
+     */
+    set directory(value) {
+        this._directory = value;
+        this._update(value);
+    }
+
+    /**
+     * The Directory that this component is going to display
+     */
+    get directory() {
+        return this._directory;
+    }
+
+	connectedCallback() {
+		this.UpgradeProperties();
+    }
+
+    UpgradeProperties() {
+        for (const prop of DirectoriesComponent.observedAttributes) {
+            this.UpgradeProperty(prop);
+        }
+    }
+
+    UpgradeProperty(prop) {
+        if (this.hasOwnProperty(prop)) {
+            const value = this[prop];
+            delete this[prop];
+            this[prop] = value;
+        }
     }
 
     /**
@@ -42,7 +75,6 @@ export default class DirectoriesComponent extends HTMLElement {
         history.pushState({}, directoryName, relativeDirectory);
         var popStateEvent = new PopStateEvent('popstate', { state: {} });
         dispatchEvent(popStateEvent);
-        this._update();
         return false;
         // an alternative approach would be to use webworkers that can intercept all http requests
         // find anything not going to a /api route (but still going to this domain) and prevent it from firing
@@ -97,7 +129,7 @@ export default class DirectoriesComponent extends HTMLElement {
         }
     }
 
-    async _update() {
+    async _update(directory) {
         let directoriesTemplate = (directory) => html`
             <table>
                 <thead>
@@ -135,7 +167,6 @@ export default class DirectoriesComponent extends HTMLElement {
             </table>
         `;
 
-        let directory = await this.fileService.GetDirectory(this.fileService.GetCurrentRelativePath());
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));
     }
 

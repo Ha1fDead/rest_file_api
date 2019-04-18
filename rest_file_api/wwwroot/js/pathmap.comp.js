@@ -74,7 +74,6 @@ export default class PathMapComponent extends HTMLElement {
             delete this[prop];
             this[prop] = value;
         }
-        // console.log('set path', this.path);
     }
 
     async _update(path) {
