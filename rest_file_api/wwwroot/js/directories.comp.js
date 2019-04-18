@@ -26,6 +26,27 @@ export default class DirectoriesComponent extends HTMLElement {
         this._wrapper = template.content.cloneNode(true);
         shadow.appendChild(this._wrapper);
         this._update();
+        window.addEventListener('popstate', event => {
+            // Known limitation -- if user manually enters a URL we cannot intercept that
+            // Apparently not even Angular does it, which is fascinating!
+            this._update();
+        }, false);
+    }
+
+    /**
+     * 
+     * @param {Event} e 
+     * @param {string} relativeDirectory 
+     * @param {string} directoryName 
+     */
+    HandleNavDirectory(e, relativeDirectory, directoryName) {
+        e.preventDefault();
+        history.pushState({}, directoryName, relativeDirectory);
+        this._update();
+        return false;
+        // an alternative approach would be to use webworkers that can intercept all http requests
+        // find anything not going to a /api route (but still going to this domain) and prevent it from firing
+        // but this works and is easier to implement
     }
 
     HandleDelete(e, relativePath, fileName, subDirName) {
@@ -90,7 +111,7 @@ export default class DirectoriesComponent extends HTMLElement {
                 <tbody>
                 ${directory.subDirectories.map((dir) => html`
                     <tr>
-                        <td><a href="${this.generateLinkToDirectory(directory.relativePath, dir)}">${dir}</a></td>
+                        <td><a @click=${e => this.HandleNavDirectory(e, this.generateLinkToDirectory(directory.relativePath, dir), dir)} href="${this.generateLinkToDirectory(directory.relativePath, dir)}">${dir}</a></td>
                         <td></td>
                         <td></td>
                         <td></td>
