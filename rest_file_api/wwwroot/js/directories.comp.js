@@ -1,4 +1,4 @@
-import {html, render} from 'https://unpkg.com/lit-html?module';y
+import {html, render} from 'https://unpkg.com/lit-html?module';
 
 
 // This uses lit-html (see readme)
@@ -62,6 +62,11 @@ export default class DirectoriesComponent extends HTMLElement {
     }
 
     async _update(directory) {
+        // sort could be vastly improved -- case insensitive, character behavior, etc.
+        // additional considerations for system (Linux always does Directories then Files, windows mix/matches IIRC)
+        // Since linux approach is easiest, I just went with that.
+        directory.subDirectories.sort((a,b) => a > b);
+        directory.files.sort((a, b) => a.fileName > b.fileName);
         let directoriesTemplate = (directory) => html`
             <table>
                 <thead>
