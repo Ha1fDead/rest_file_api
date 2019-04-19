@@ -159,7 +159,7 @@ export default class FileComponent extends HTMLElement {
      */
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
-        history.pushState({}, directoryName, relativeDirectory);
+        history.pushState({}, directoryName, encodeURI(relativeDirectory));
         var popStateEvent = new PopStateEvent('popstate', { state: {} });
         dispatchEvent(popStateEvent);
         return false;
@@ -170,13 +170,24 @@ export default class FileComponent extends HTMLElement {
 
     _update() {
         let directoryTemplate = (dirName, relativePath) => html`
-            <div><a @click=${e => { this.HandleNavDirectory(e, this._generateLinkToDirectory(relativePath, dirName), dirName)}} href="${this._generateLinkToDirectory(relativePath, dirName)}">${dirName}</a></div>
+            <div>
+                <a 
+                    @click=${e => { this.HandleNavDirectory(e, this.fileService.GenerateLinkToDirectory(relativePath, dirName), dirName)}}
+                    href="${encodeURI(this.fileService.GenerateLinkToDirectory(relativePath, dirName))}">
+                    ${dirName}
+                </a>
+            </div>
             <button @click=${e => { this.HandleDelete(e, relativePath, null, dirName) }}>Delete</button>
             <button @click=${e => { this.HandleCopy(e, relativePath, null, dirName) }}>Copy</button>
             <button @click=${e => { this.HandleMove(e, relativePath, null, dirName) }}>Move</button>
         `;
         let fileTemplate = (fileName, relativePath, sizebytes, dateCreated, dateModified) => html`
-            <div><a href="${this._generateLinkToFile(relativePath, fileName)}">${fileName}</a></div>
+            <div>
+                <a 
+                    href="${encodeURI(this.fileService.GenerateLinkToFile(relativePath, fileName))}">
+                    ${fileName}
+                </a>
+            </div>
             <div>${relativePath}</div>
             <div>${sizebytes}</div>
             <div>${new Date(dateCreated).toLocaleDateString()}</div>
@@ -194,14 +205,6 @@ export default class FileComponent extends HTMLElement {
         }
 
     }
-
-    _generateLinkToDirectory(relativePath, subDirectory) {
-        return `/${relativePath ? `${relativePath}/` : ``}${subDirectory}`;
-    }
-
-    _generateLinkToFile(relativePath, fileName) {
-        return `/api/file/download/${relativePath ? `${relativePath}/` : ``}${fileName}`;
-    } 
 }
 
 customElements.define("demo-file", FileComponent);

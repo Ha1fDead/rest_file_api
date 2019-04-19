@@ -80,7 +80,7 @@ export default class PathMapComponent extends HTMLElement {
         // need to split the string but return the entire string from the split
         let pathTemplate = (currentPath) => html`
             ${this.getPaths(currentPath).map((subpath) => html`
-                / <a @click=${e => this.HandleNavDirectory(e, subpath.previousPath, subpath.part)} href="${subpath.previousPath}">${subpath.part}</a>
+                / <a @click=${e => this.HandleNavDirectory(e, subpath.previousPath, subpath.part)} href="${encodeURI(subpath.previousPath)}">${subpath.part}</a>
             `)}
         `;
 
@@ -95,7 +95,7 @@ export default class PathMapComponent extends HTMLElement {
      */
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
-        history.pushState({}, directoryName, relativeDirectory);
+        history.pushState({}, directoryName, encodeURI(relativeDirectory));
         var popStateEvent = new PopStateEvent('popstate', { state: {} });
         dispatchEvent(popStateEvent);
         return false;

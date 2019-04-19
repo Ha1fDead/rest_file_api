@@ -4,8 +4,16 @@
     }
 
     GetCurrentRelativePath() {
-        return window.location.pathname.substr(1);
+        return decodeURI(window.location.pathname.substr(1));
     }
+
+    GenerateLinkToDirectory(relativePath, subDirectory) {
+        return `/${relativePath ? `${relativePath}/` : ``}${subDirectory}`;
+    }
+
+    GenerateLinkToFile(relativePath, fileName) {
+        return `/api/file/download/${relativePath ? `${relativePath}/` : ``}${fileName}`;
+    } 
 
     /**
      * Retrieves a directory & its immediate children
@@ -16,7 +24,7 @@
             relativePathToDirectory = "";
         }
 
-        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}`)
+        let res = await fetch(encodeURI(`/api/file?relativePathToDirectory=${relativePathToDirectory}`))
             .catch(this._HandleNetworkError);
 
         if (!res.ok) {
@@ -44,10 +52,6 @@
             method: 'post',
             body: data
         }).catch(this._HandleNetworkError);
-
-        if (!res.ok) {
-            return this._HandleApplicationError(res);
-        }
 
         // operation was successful
         return Promise.resolve();

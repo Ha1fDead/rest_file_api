@@ -8,6 +8,7 @@ using rest_file_api.models;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using System.Net;
 
 namespace rest_file_api.controllers
 {
@@ -37,6 +38,8 @@ namespace rest_file_api.controllers
                 relativePathToDirectory = "";
             }
 
+            relativePathToDirectory = WebUtility.UrlDecode(relativePathToDirectory);
+
             var directoryInfo = _fileProvider.GetDirectoryContents(relativePathToDirectory);
             if (!directoryInfo.Exists) 
             {
@@ -56,6 +59,7 @@ namespace rest_file_api.controllers
                 return BadRequest(new ApiError("You must specify a valid path to the file"));
             }
 
+            relativePathToFile = WebUtility.UrlDecode(relativePathToFile);
             var fileInfo = _fileProvider.GetFileInfo(relativePathToFile);
             if (!fileInfo.Exists)
             {
