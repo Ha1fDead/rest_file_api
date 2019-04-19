@@ -68,24 +68,14 @@ export default class DirectoriesComponent extends HTMLElement {
         directory.subDirectories.sort((a,b) => a > b);
         directory.files.sort((a, b) => a.fileName > b.fileName);
         let directoriesTemplate = (directory) => html`
-            <table>
-                <thead>
-                    <tr>
-                        <th>File Name</th>
-                        <th>Size (Bytes)</th>
-                        <th>Date Created</th>
-                        <th>Date Modified</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <ul>
                 ${directory.subDirectories.map((dir) => html`
-                    <tr><demo-file filename="${dir}" relativepath="${directory.relativePath}"></demo-file></tr>
+                    <li><demo-file filename="${dir}" relativepath="${directory.relativePath}"></demo-file></li>
                 `)}
                 ${directory.files.map((file) => html`
-                    <tr><demo-file filename="${file.name}" relativepath="${directory.relativePath}" sizebytes="${file.sizeBytes}" datemodified="${file.dateModified}" datecreated="${file.dateCreated}"></demo-file></tr>
+                    <li><demo-file filename="${file.name}" relativepath="${directory.relativePath}" sizebytes="${file.sizeBytes}" datemodified="${file.dateModified}" datecreated="${file.dateCreated}"></demo-file></li>
                 `)}
-                </tbody>
-            </table>
+            </ul>
         `;
 
         render(directoriesTemplate(directory), this.shadowRoot.getElementById("wrapper"));
