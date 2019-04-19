@@ -60,6 +60,19 @@ namespace rest_file_api
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/error-handling?view=aspnetcore-2.2
+                app.UseExceptionHandler(errorApp =>
+                {
+                    errorApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.ContentType = "text/json";
+                        await context.Response.WriteAsync("{ \"message\": \"There was an unexpected problem handling your request. Please try again.\" }");
+                    });
+                });
+            }
 
             app.UseResponseCompression();
             app.UseMvc();
