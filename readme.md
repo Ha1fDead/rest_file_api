@@ -2,22 +2,30 @@
 
 This is a simple demo project for MapLarge. The goals were to create a simple API + SPA that can browse files / folders from a configurable base directory running on the server.
 
-Users should...
+## Features
 
-- Be able to view metadata of all files / directories from the configurable base directory
-- Be able to search for files / directories from the configurable base directory
-- Be able to upload files into the arbitrary directories
-- Be able to download files from the arbitrary directories
+- Users can view all directories and files from a configurable Root URL
+- Developers can change the root URL via `Program.cs` configuration (moving this to an INI/JSON config format is very simple)
+- Users can copy where they are in the current hierarchy and send it to other people
+- Users can copy files and directories (recursively)
+- Users can move files and directories (recursively)
+- Users can delete files and directories
+- Users can upload new files into the current directory
+  - You can also drag and drop a file into the fieldset
+- Users can download files
 
-Bonuses...
+## Building
 
-- Move files + directories between directories
-- Delete files + directories from directories
+Requirements:
 
-The client should...
+1. `dotnetcore` installed ([download](https://dotnet.microsoft.com/download))
+2. clone the project (`git clone https://github.com/Ha1fDead/rest_file_api.git`)
+3. run `dotnet start`
 
-- Be deep-linkable (state stored in URL)
-- Be a SPA
+The app should be running on `http://localhost:5000` and `https://localhost:5001`. It should be rendering your root directory.
+NOTE: File operations done on your directory are permanent!
+
+To configure the root directory, simply change the configuration in `Program.cs`.
 
 ## Testing
 
@@ -27,11 +35,13 @@ Or install [NET Core Test Explorer](https://marketplace.visualstudio.com/items?i
 
 ## Architecture
 
-To automate client-side rendering & templating, I used [lit-html](https://lit-html.polymer-project.org). I like web components.
+To automate client-side rendering & templating, I used [lit-html](https://lit-html.polymer-project.org). I like web components, and `lit-html` seemed very similar to Knockout, so I felt it would be acceptable to use.
+
+I try to use a more functional approach to client-side rendering (view changes when data changes).
 
 ## Security
 
-Security is pretty non-existent. I block [path-traversal](https://www.owasp.org/index.php/Path_Traversal) attacks, but otherwise everything listed in [OWASP](https://www.owasp.org/index.php/Unrestricted_File_Upload) is valid.
+Security is pretty non-existent. XSS attacks are not a concern & I block [path-traversal](https://www.owasp.org/index.php/Path_Traversal) attacks, but otherwise everything listed in [OWASP](https://www.owasp.org/index.php/Unrestricted_File_Upload) is valid.
 
 To secure this, I would...
 
@@ -53,3 +63,11 @@ I would probably avoid a homebrew file system uploader in favour of off-the-shel
 3. Move storage system to a distributed file system
 
 My biggest concerns would be in multi-user scenarios. Alice deletes record A at the same time Bob moves record A to directory B.
+
+## Improvements
+
+1. Add webpack or rollupjs to build chain
+2. Introduce typescript & convert frontend
+3. Switch to React, Angular, or VueJS
+4. Vastly improve scalability
+5. Vastly improve security
