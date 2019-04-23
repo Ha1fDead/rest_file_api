@@ -8,7 +8,17 @@ template.innerHTML = `<div id="wrapper">
 
 const style = document.createElement("style");
 style.textContent = `
+    ul {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+        list-style: none;
+        padding: 0px;
+    }
 
+    ul > li {
+        margin: 10px;
+    }
 `;
 
 export default class DirectoriesComponent extends HTMLElement {
