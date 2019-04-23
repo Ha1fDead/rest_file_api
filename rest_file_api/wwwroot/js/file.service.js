@@ -24,14 +24,14 @@
             relativePathToDirectory = "";
         }
 
-        let res = await fetch(encodeURI(`/api/file?relativePathToDirectory=${relativePathToDirectory}`))
+        const res = await fetch(encodeURI(`/api/file?relativePathToDirectory=${relativePathToDirectory}`))
             .catch(this._HandleNetworkError);
 
         if (!res.ok) {
             return this._HandleApplicationError(res);
         }
         
-        let data = await res.json();
+        const data = await res.json();
         return data;
     }
 
@@ -41,14 +41,14 @@
      * @param {string} relativePathToDirectory 
      */
     async UploadFile(filesToUpload, relativePathToDirectory) {
-        let data = new FormData();
+        const data = new FormData();
 
         data.append('relativePathToDirectory', relativePathToDirectory);
         for (let x = 0; x < filesToUpload.length; x++) {
             data.append('files', filesToUpload.item(x));
         }
 
-        let res = await fetch('/api/file', {
+        const res = await fetch('/api/file', {
             method: 'post',
             body: data
         }).catch(this._HandleNetworkError);
@@ -75,7 +75,7 @@
             FileName: fileName ? fileName : '',
             CopyName: copyName
         };
-        let res = await fetch(`/api/file/copy`, {
+        const res = await fetch(`/api/file/copy`, {
             method: 'put',
             headers: {
                 "Content-Type": "application/json"
@@ -99,12 +99,12 @@
      * @param {string} relativePathToDestDirectory 
      */
     async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
-        let data = {
+        const data = {
             FileName: fileName ? fileName : '',
             RelativePathToDirectory: relativePathToDirectory,
             RelativePathToDestDirectory: relativePathToDestDirectory
         };
-        let res = await fetch(`/api/file/move`, {
+        const res = await fetch(`/api/file/move`, {
             method: 'put',
             headers: {
                 "Content-Type": "application/json"
@@ -128,11 +128,11 @@
      * @returns {Promise<void, string>}
      */
     async Delete(relativePathToDirectory, fileName) {
-        let data = {
+        const data = {
             FileName: fileName ? fileName : '',
             RelativePathToDirectory: relativePathToDirectory
         };
-        let res = await fetch(`/api/file`, {
+        const res = await fetch(`/api/file`, {
             method: 'delete',
             headers: {
                 "Content-Type": "application/json"
@@ -156,13 +156,13 @@
      */
     async _HandleApplicationError(response) {
         // something wrong with the request
-        let body = await response.text();
+        const body = await response.text();
         if (body.length == 0) {
             // no message from server -- we have nothing useful to tell the user
             return Promise.reject("There was an unexpected problem handling your request. Please try again.");
         }
         
-        let errorObject = JSON.parse(body);
+        const errorObject = JSON.parse(body);
         return Promise.reject(errorObject.message);
     }
 

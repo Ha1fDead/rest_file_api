@@ -25,12 +25,12 @@ export default class FileComponent extends HTMLElement {
 
     HandleDelete(e, relativePath, fileName, subDirName) {
         if (subDirName) {
-            let path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
+            const path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
             this.fileService.Delete(path, null).catch((err) => {
                 alert(err);
             });
         } else {
-            let path = relativePath ? relativePath : ``;
+            const path = relativePath ? relativePath : ``;
             this.fileService.Delete(path, fileName).then((res) => {
                 alert('success');
             }, (err) => {
@@ -44,12 +44,12 @@ export default class FileComponent extends HTMLElement {
         if (subDirName) {
             path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
             file = null;
-            let dirInput = this.shadowRoot.getElementById("dircopyinput");
+            const dirInput = this.shadowRoot.getElementById("dircopyinput");
             subdir = dirInput.value;
         } else {
             path = relativePath ? relativePath : ``;
             file = fileName;
-            let fileInput = this.shadowRoot.getElementById("filecopyinput");
+            const fileInput = this.shadowRoot.getElementById("filecopyinput");
             subdir = fileInput.value;
         }
 
@@ -65,12 +65,12 @@ export default class FileComponent extends HTMLElement {
         if (subDirName) {
             path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
             file = null;
-            let dirInput = this.shadowRoot.getElementById("dirmoveinput");
+            const dirInput = this.shadowRoot.getElementById("dirmoveinput");
             destPath = dirInput.value;
         } else {
             path = relativePath ? relativePath : ``;
             file = fileName;
-            let fileInput = this.shadowRoot.getElementById("filemoveinput");
+            const fileInput = this.shadowRoot.getElementById("filemoveinput");
             destPath = fileInput.value;
         }
 
@@ -148,7 +148,7 @@ export default class FileComponent extends HTMLElement {
     }
 
     UpgradeProperties() {
-        for (const prop of FileComponent.observedAttributes) {
+        for (let prop of FileComponent.observedAttributes) {
             this.UpgradeProperty(prop);
         }
     }
@@ -170,7 +170,7 @@ export default class FileComponent extends HTMLElement {
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
         history.pushState({}, directoryName, encodeURI(relativeDirectory));
-        var popStateEvent = new PopStateEvent('popstate', { state: {} });
+        const popStateEvent = new PopStateEvent('popstate', { state: {} });
         dispatchEvent(popStateEvent);
         return false;
         // an alternative approach would be to use webworkers that can intercept all http requests
@@ -179,7 +179,7 @@ export default class FileComponent extends HTMLElement {
     }
 
     _update() {
-        let directoryTemplate = (dirName, relativePath) => html`
+        const directoryTemplate = (dirName, relativePath) => html`
             <div>
                 <a 
                     @click=${e => { this.HandleNavDirectory(e, this.fileService.GenerateLinkToDirectory(relativePath, dirName), dirName)}}
@@ -193,7 +193,7 @@ export default class FileComponent extends HTMLElement {
             <button @click=${e => { this.HandleMove(e, relativePath, null, dirName) }}>Move</button>
             <input id="dirmoveinput" type="text" value="${relativePath}/${dirName}"/>
         `;
-        let fileTemplate = (fileName, relativePath, sizebytes, dateCreated, dateModified) => html`
+        const fileTemplate = (fileName, relativePath, sizebytes, dateCreated, dateModified) => html`
             <div>
                 <a 
                     href="${encodeURI(this.fileService.GenerateLinkToFile(relativePath, fileName))}">

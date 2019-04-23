@@ -15,18 +15,18 @@ class Main {
     }
 
     async UpdateState(e) {
-        let fs = new FileService();
-        let pathmaps = document.getElementsByTagName("demo-path-map");
+        const fs = new FileService();
+        const pathmaps = document.getElementsByTagName("demo-path-map");
     
-        for (const path of pathmaps) {
+        for (let path of pathmaps) {
             path.path = fs.GetCurrentRelativePath();
         }
     
-        let directorycomp = document.getElementsByTagName("demo-directories")[0];
-        let notfoundcomponent = document.getElementsByTagName("demo-not-found")[0];
+        const directorycomp = document.getElementsByTagName("demo-directories")[0];
+        const notfoundcomponent = document.getElementsByTagName("demo-not-found")[0];
 
         try {
-            let directory = await fs.GetDirectory(fs.GetCurrentRelativePath())
+            const directory = await fs.GetDirectory(fs.GetCurrentRelativePath())
             directorycomp.style.display = "";
             notfoundcomponent.style.display = "none";
             // abuse immutability

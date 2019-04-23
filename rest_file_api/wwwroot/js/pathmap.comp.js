@@ -78,7 +78,7 @@ export default class PathMapComponent extends HTMLElement {
 
     async _update(path) {
         // need to split the string but return the entire string from the split
-        let pathTemplate = (currentPath) => html`
+        const pathTemplate = (currentPath) => html`
             ${this.getPaths(currentPath).map((subpath) => html`
                 / <a @click=${e => this.HandleNavDirectory(e, subpath.previousPath, subpath.part)} href="${encodeURI(subpath.previousPath)}">${subpath.part}</a>
             `)}
@@ -96,13 +96,13 @@ export default class PathMapComponent extends HTMLElement {
     HandleNavDirectory(e, relativeDirectory, directoryName) {
         e.preventDefault();
         history.pushState({}, directoryName, encodeURI(relativeDirectory));
-        var popStateEvent = new PopStateEvent('popstate', { state: {} });
+        const popStateEvent = new PopStateEvent('popstate', { state: {} });
         dispatchEvent(popStateEvent);
         return false;
     }
 
     getPaths(path) {
-        let split = this.splitStringIntoParts(path, "/");
+        const split = this.splitStringIntoParts(path, "/");
         split.splice(0, 0, { previousPath: "/", part: "home" });
         return split;
     }
@@ -121,7 +121,7 @@ export default class PathMapComponent extends HTMLElement {
         let split = str.split(delimiter);
         let parts = [];
         for (let x = 0; x < split.length; x++) {
-            let previous = `/${split.slice(0, x + 1).join("/")}`;
+            const previous = `/${split.slice(0, x + 1).join("/")}`;
             parts[x] = {
                 previousPath: previous,
                 part: split[x]

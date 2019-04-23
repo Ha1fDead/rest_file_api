@@ -33,7 +33,7 @@ export default class UploadComponent extends HTMLElement {
         event.preventDefault();
 
         const files = event.dataTransfer.files;
-        let filecontrol = this.shadowRoot.getElementById("file");
+        const filecontrol = this.shadowRoot.getElementById("file");
         filecontrol.files = files;
     }
 
@@ -43,13 +43,13 @@ export default class UploadComponent extends HTMLElement {
         this.uploadSuccessful = null;
         this.uploadMessage = null;
 
-        let fileinput = this.shadowRoot.getElementById("file");
+        const fileinput = this.shadowRoot.getElementById("file");
 
         if (fileinput.files.length == 0) {
             alert("You must specify a file to be uploaded");
         }
 
-        let fileService = new FileService();
+        const fileService = new FileService();
         fileService.UploadFile(fileinput.files, fileService.GetCurrentRelativePath())
             .then(() => {
                 this.uploadSuccessful = true;

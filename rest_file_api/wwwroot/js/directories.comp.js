@@ -58,7 +58,7 @@ export default class DirectoriesComponent extends HTMLElement {
     }
 
     UpgradeProperties() {
-        for (const prop of DirectoriesComponent.observedAttributes) {
+        for (let prop of DirectoriesComponent.observedAttributes) {
             this.UpgradeProperty(prop);
         }
     }
@@ -77,7 +77,7 @@ export default class DirectoriesComponent extends HTMLElement {
         // Since linux approach is easiest, I just went with that.
         directory.subDirectories.sort((a,b) => a > b);
         directory.files.sort((a, b) => a.fileName > b.fileName);
-        let directoriesTemplate = (directory) => html`
+        const directoriesTemplate = (directory) => html`
             <ul>
                 ${directory.subDirectories.map((dir) => html`
                     <li><demo-file filename="${dir}" relativepath="${directory.relativePath}"></demo-file></li>
