@@ -40,35 +40,45 @@ export default class FileComponent extends HTMLElement {
     }
 
     HandleCopy(e, relativePath, fileName, subDirName) {
+        let path, file, subdir;
         if (subDirName) {
-            let path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
-            this.fileService.Copy(path, null, subDirName + '1').catch((err) => {
-                alert(err);
-            });
+            path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
+            file = null;
+            let dirInput = this.shadowRoot.getElementById("dircopyinput");
+            subdir = dirInput.value;
         } else {
-            let path = relativePath ? relativePath : ``;
-            this.fileService.Copy(path, fileName, fileName + '1').then((res) => {
-                alert('success');
-            }, (err) => {
-                alert(err);
-            });
+            path = relativePath ? relativePath : ``;
+            file = fileName;
+            let fileInput = this.shadowRoot.getElementById("filecopyinput");
+            subdir = fileInput.value;
         }
+
+        this.fileService.Copy(path, file, subdir).catch((err) => {
+            alert('success');
+        }, (err) => {
+            alert(err);
+        });
     }
 
     HandleMove(e, relativePath, fileName, subDirName) {
+        let path, file, subdir;
         if (subDirName) {
-            let path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
-            this.fileService.Move(path, null, path + '1').catch((err) => {
-                alert(err);
-            });
+            path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
+            file = null;
+            let dirInput = this.shadowRoot.getElementById("dirmoveinput");
+            subdir = dirInput.value;
         } else {
-            let path = relativePath ? relativePath : ``;
-            this.fileService.Move(path, fileName, path + '1').then((res) => {
-                alert('success');
-            }, (err) => {
-                alert(err);
-            });
+            path = relativePath ? relativePath : ``;
+            file = fileName;
+            let fileInput = this.shadowRoot.getElementById("filemoveinput");
+            subdir = fileInput.value;
         }
+
+        this.fileService.Move(path, file, subdir).then((res) => {
+            alert('success');
+        }, (err) => {
+            alert(err);
+        });
     }
 
     static get observedAttributes() {
@@ -179,7 +189,9 @@ export default class FileComponent extends HTMLElement {
             </div>
             <button @click=${e => { this.HandleDelete(e, relativePath, null, dirName) }}>Delete</button>
             <button @click=${e => { this.HandleCopy(e, relativePath, null, dirName) }}>Copy</button>
+            <input id="dircopyinput" type="text" value="${relativePath}/${dirName}1"/>
             <button @click=${e => { this.HandleMove(e, relativePath, null, dirName) }}>Move</button>
+            <input id="dirmoveinput" type="text" value="${relativePath}/${dirName}"/>
         `;
         let fileTemplate = (fileName, relativePath, sizebytes, dateCreated, dateModified) => html`
             <div>
@@ -194,7 +206,9 @@ export default class FileComponent extends HTMLElement {
             <div>${new Date(dateModified).toLocaleDateString()}</div>
             <button @click=${e => { this.HandleDelete(e, relativePath, fileName, null) }}>Delete</button>
             <button @click=${e => { this.HandleCopy(e, relativePath, fileName, null) }}>Copy</button>
+            <input id="filecopyinput" type="text" value="${fileName}"/>
             <button @click=${e => { this.HandleMove(e, relativePath, fileName, null) }}>Move</button>
+            <input id="filemoveinput" type="text" value="${relativePath}/${fileName}"/>
         `;
 
         if (this.sizebytes == null) {
@@ -203,7 +217,6 @@ export default class FileComponent extends HTMLElement {
         } else {
             render(fileTemplate(this.filename, this.relativepath, this.sizebytes, this.datecreated, this.datemodified), this.shadowRoot.getElementById("wrapper"));
         }
-
     }
 }
 
