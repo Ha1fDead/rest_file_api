@@ -22,6 +22,8 @@ Requirements:
 2. clone the project (`git clone https://github.com/Ha1fDead/rest_file_api.git`)
 3. run `dotnet run` from the `rest_file_api` directory (NOT the root solution)
 
+(You can run `dotnet --info` to verify dotnet core is installed correctly)
+
 For Visual Studio Code:
 
 1. `dotnetcore` SDK installed ([download](https://dotnet.microsoft.com/download))
