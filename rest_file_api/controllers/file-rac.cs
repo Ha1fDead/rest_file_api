@@ -129,16 +129,16 @@ namespace rest_file_api.controllers
         [HttpDelete]
         [Route("")]
         // Extra
-        public ActionResult Delete(string relativePathToDirectory, string fileName)
+        public ActionResult Delete([FromBody] ApiDeleteFile model)
         {
-            if (string.IsNullOrEmpty(relativePathToDirectory))
+            if (string.IsNullOrEmpty(model.RelativePathToDirectory))
             {
-                relativePathToDirectory = "";
+                model.RelativePathToDirectory = "";
             }
 
-            if (string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(model.FileName))
             {
-                var fullDestPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                var fullDestPath = this.GetAbsoluteDirectoryPath(model.RelativePathToDirectory);
                 if (!ResolvedPathIsValid(fullDestPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -155,7 +155,7 @@ namespace rest_file_api.controllers
             }
             else
             {
-                var fileInfo = _fileProvider.GetFileInfo(Path.Join(relativePathToDirectory, fileName));
+                var fileInfo = _fileProvider.GetFileInfo(Path.Join(model.RelativePathToDirectory, model.FileName));
                 if (!fileInfo.Exists)
                 {
                     return NotFound(new ApiError("The directory you are requesting to delete does not exist"));

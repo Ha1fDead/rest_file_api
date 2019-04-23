@@ -107,8 +107,16 @@
      * @returns {Promise<void, string>}
      */
     async Delete(relativePathToDirectory, fileName) {
-        let res = await fetch(`/api/file?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}`, {
-            method: 'delete'
+        let data = {
+            FileName: fileName ? fileName : '',
+            RelativePathToDirectory: relativePathToDirectory
+        }
+        let res = await fetch(`/api/file`, {
+            method: 'delete',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         }).catch(this._HandleNetworkError);
 
         if (!res.ok) {
