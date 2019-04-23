@@ -16,14 +16,14 @@ namespace rest_file_api.controllers
 {
 
     [Produces("application/json")]
-    [Route("api/[controller]")]
+    [Route("api/file")]
     [ApiController]
-    public class FileController : ControllerBase
+    public class FileRestApiController : ControllerBase
     {
         private readonly IConfiguration _config;
         private readonly IFileProvider _fileProvider;
 
-        public FileController(
+        public FileRestApiController(
             IConfiguration config,
             IFileProvider fileProvider)
         {

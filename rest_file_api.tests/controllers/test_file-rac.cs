@@ -25,7 +25,7 @@ namespace rest_file_api.tests.controllers
             stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
             var mockConfigProvider = new Mock<IConfiguration>();
 
-            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
+            var sut = new rest_file_api.controllers.FileRestApiController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
             var result = sut.Get(path);
@@ -48,7 +48,7 @@ namespace rest_file_api.tests.controllers
             stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
             var mockConfigProvider = new Mock<IConfiguration>();
 
-            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
+            var sut = new rest_file_api.controllers.FileRestApiController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
             var result = sut.Get(null);
@@ -73,7 +73,7 @@ namespace rest_file_api.tests.controllers
             stubFileProvider.Setup(x => x.GetDirectoryContents(path)).Returns(mockDirectory.Object);
             var mockConfigProvider = new Mock<IConfiguration>();
 
-            var sut = new FileController(mockConfigProvider.Object, stubFileProvider.Object);
+            var sut = new rest_file_api.controllers.FileRestApiController(mockConfigProvider.Object, stubFileProvider.Object);
 
             // act
             var result = sut.Get(path);
