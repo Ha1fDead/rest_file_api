@@ -260,23 +260,23 @@ namespace rest_file_api.controllers
         [HttpPut]
         [Route("copy")]
         // Extra
-        public ActionResult Copy(string relativePathToDirectory, string fileName, string copyName)
+        public ActionResult Copy([FromBody] ApiCopyFile model)
         {
-            if (string.IsNullOrEmpty(relativePathToDirectory))
+            if (string.IsNullOrEmpty(model.RelativePathToDirectory))
             {
-                relativePathToDirectory = "";
+                model.RelativePathToDirectory = "";
             }
 
-            if (string.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(model.FileName))
             {
                 // directory move
-                if (string.IsNullOrEmpty(relativePathToDirectory))
+                if (string.IsNullOrEmpty(model.RelativePathToDirectory))
                 {
                     // You cannot copy the root directory
                     return StatusCode(403);
                 }
                 
-                var fullOriginalPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                var fullOriginalPath = this.GetAbsoluteDirectoryPath(model.RelativePathToDirectory);
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -287,7 +287,7 @@ namespace rest_file_api.controllers
                 // So copying directory C to D with structure a/b/c/ would yield
                 // a/b/c
                 // a/b/d
-                var fullDestinationPath = this.GetAbsoluteDirectoryPath(Path.Join(relativePathToDirectory, "../", copyName));
+                var fullDestinationPath = this.GetAbsoluteDirectoryPath(Path.Join(model.RelativePathToDirectory, "../", model.CopyName));
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -310,14 +310,14 @@ namespace rest_file_api.controllers
             else
             {
                 // file move
-                var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+                var fullOriginalPath = this.GetAbsoluteFilePath(model.RelativePathToDirectory, model.FileName);
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
                     return StatusCode(403);
                 }
 
-                var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDirectory, copyName);
+                var fullDestinationPath = this.GetAbsoluteFilePath(model.RelativePathToDirectory, model.CopyName);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
