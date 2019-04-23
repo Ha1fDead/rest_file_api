@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using System.Net;
+using rest_file_api.models.actions;
 
 namespace rest_file_api.controllers
 {
@@ -169,19 +170,19 @@ namespace rest_file_api.controllers
         [HttpPut]
         [Route("move")]
         // Extra
-        public ActionResult Move(string relativePathToDirectory, string fileName, string relativePathToDestDirectory)
+        public ActionResult Move([FromBody] ApiMoveFile model)
         {
-            if (string.IsNullOrEmpty(relativePathToDirectory))
+            if (string.IsNullOrEmpty(model.RelativePathToDirectory))
             {
-                relativePathToDirectory = "";
+                model.RelativePathToDirectory = "";
             }
 
-            if (string.IsNullOrEmpty(relativePathToDestDirectory))
+            if (string.IsNullOrEmpty(model.RelativePathToDestDirectory))
             {
-                relativePathToDestDirectory = "";
+                model.RelativePathToDestDirectory = "";
             }
 
-            var absoluteDestinationDirectory = this.GetAbsoluteDirectoryPath(relativePathToDestDirectory);
+            var absoluteDestinationDirectory = this.GetAbsoluteDirectoryPath(model.RelativePathToDestDirectory);
             if (!ResolvedPathIsValid(absoluteDestinationDirectory))
             {
                 // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -193,17 +194,17 @@ namespace rest_file_api.controllers
                 return NotFound(new ApiError("The directory you are trying to move the file to does not exist"));
             }
 
-            if (string.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(model.FileName))
             {
                 // directory move
-                var fullOriginalPath = this.GetAbsoluteDirectoryPath(relativePathToDirectory);
+                var fullOriginalPath = this.GetAbsoluteDirectoryPath(model.RelativePathToDirectory);
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
                     return StatusCode(403);
                 }
 
-                var fullDestinationPath = this.GetAbsoluteDirectoryPath(relativePathToDestDirectory);
+                var fullDestinationPath = this.GetAbsoluteDirectoryPath(model.RelativePathToDestDirectory);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -226,14 +227,14 @@ namespace rest_file_api.controllers
             else
             {
                 // file move
-                var fullOriginalPath = this.GetAbsoluteFilePath(relativePathToDirectory, fileName);
+                var fullOriginalPath = this.GetAbsoluteFilePath(model.RelativePathToDirectory, model.FileName);
                 if (!ResolvedPathIsValid(fullOriginalPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
                     return StatusCode(403);
                 }
 
-                var fullDestinationPath = this.GetAbsoluteFilePath(relativePathToDestDirectory, fileName);
+                var fullDestinationPath = this.GetAbsoluteFilePath(model.RelativePathToDestDirectory, model.FileName);
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"

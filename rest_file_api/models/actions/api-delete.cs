@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
-namespace rest_file_api.models
+namespace rest_file_api.models.actions
 {
     public class ApiDeleteFile {
         public string RelativePathToDirectory {get; set;}

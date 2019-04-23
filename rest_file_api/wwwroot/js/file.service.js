@@ -88,8 +88,17 @@
      * @param {string} relativePathToDestDirectory 
      */
     async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
-        let res = await fetch(`/api/file/move?relativePathToDirectory=${relativePathToDirectory}&fileName=${fileName ? fileName : ''}&relativePathToDestDirectory=${relativePathToDestDirectory}`, {
-            method: 'put'
+        let data = {
+            FileName: fileName ? fileName : '',
+            RelativePathToDirectory: relativePathToDirectory,
+            relativePathToDestDirectory: relativePathToDestDirectory
+        };
+        let res = await fetch(`/api/file/move`, {
+            method: 'put',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
         }).catch(this._HandleNetworkError);
 
         if (!res.ok) {
@@ -110,7 +119,7 @@
         let data = {
             FileName: fileName ? fileName : '',
             RelativePathToDirectory: relativePathToDirectory
-        }
+        };
         let res = await fetch(`/api/file`, {
             method: 'delete',
             headers: {
