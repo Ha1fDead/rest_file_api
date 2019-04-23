@@ -11,6 +11,7 @@ class Main {
     constructor() {
 
         window.addEventListener('popstate', this.UpdateState.bind(this), false);
+        window.addEventListener('demo-datachange', this.UpdateState.bind(this), false);
     }
 
     async UpdateState(e) {

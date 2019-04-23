@@ -54,6 +54,7 @@
         }).catch(this._HandleNetworkError);
 
         // operation was successful
+        window.dispatchEvent(new Event('demo-datachange'));
         return Promise.resolve();
     }
 
@@ -87,6 +88,7 @@
         }
 
         // operation was successful
+        window.dispatchEvent(new Event('demo-datachange'));
         return Promise.resolve();
     }
 
@@ -115,6 +117,7 @@
         }
 
         // operation was successful
+        window.dispatchEvent(new Event('demo-datachange'));
         return Promise.resolve();
     }
 
@@ -142,6 +145,7 @@
         }
 
         // operation was successful
+        window.dispatchEvent(new Event('demo-datachange'));
         return Promise.resolve();
     }
 
