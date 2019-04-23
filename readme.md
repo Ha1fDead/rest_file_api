@@ -32,7 +32,7 @@ For Visual Studio Code:
 4. Open the solution in VSCode
 5. Hit F5, your default browser should open
 
-The app should be running on `http://localhost:5000` and `https://localhost:5001`. It should be rendering your root directory.
+The app should be running on `http://localhost:5000` and `https://localhost:5001`. It should be rendering your home directory.
 NOTE: File operations done on your directory are permanent!
 
 To configure the root directory, simply change the configuration in `Program.cs`.
