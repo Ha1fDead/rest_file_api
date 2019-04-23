@@ -53,7 +53,7 @@ export default class FileComponent extends HTMLElement {
             subdir = fileInput.value;
         }
 
-        this.fileService.Copy(path, file, subdir).catch((err) => {
+        this.fileService.Copy(path, file, subdir).then((res) => {
             alert('success');
         }, (err) => {
             alert(err);
