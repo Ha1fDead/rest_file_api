@@ -94,14 +94,14 @@ namespace rest_file_api.logic
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files)
             {
-                string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, false);
+                string tempPath = Path.Combine(destDirName, file.Name);
+                file.CopyTo(tempPath, false);
             }
 
             foreach (DirectoryInfo subdir in dirs)
             {
-                string temppath = Path.Combine(destDirName, subdir.Name);
-                DirectoryCopy(subdir.FullName, temppath);
+                string tempPath = Path.Combine(destDirName, subdir.Name);
+                DirectoryCopy(subdir.FullName, tempPath);
             }
         }
     }
