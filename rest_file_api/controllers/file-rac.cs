@@ -52,6 +52,7 @@ namespace rest_file_api.controllers
 
         [HttpGet]
         [HttpPost]
+        // Best to leave this as URL-encoded so native browser functionality can take over
         [Route("download/{*relativePathToFile}")]
         public async Task<ActionResult> Download(string relativePathToFile)
         {

@@ -29,6 +29,7 @@ class Main {
             let directory = await fs.GetDirectory(fs.GetCurrentRelativePath())
             directorycomp.style.display = "";
             notfoundcomponent.style.display = "none";
+            // abuse immutability
             directorycomp.directory = directory;
         }
         catch(e) {
