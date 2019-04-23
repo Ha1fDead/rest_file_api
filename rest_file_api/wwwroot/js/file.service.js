@@ -100,7 +100,7 @@
         let data = {
             FileName: fileName ? fileName : '',
             RelativePathToDirectory: relativePathToDirectory,
-            relativePathToDestDirectory: relativePathToDestDirectory
+            RelativePathToDestDirectory: relativePathToDestDirectory
         };
         let res = await fetch(`/api/file/move`, {
             method: 'put',

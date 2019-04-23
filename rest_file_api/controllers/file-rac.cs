@@ -182,18 +182,6 @@ namespace rest_file_api.controllers
                 model.RelativePathToDestDirectory = "";
             }
 
-            var absoluteDestinationDirectory = this.GetAbsoluteDirectoryPath(model.RelativePathToDestDirectory);
-            if (!ResolvedPathIsValid(absoluteDestinationDirectory))
-            {
-                // User may be attempting to view "Up" directories -- app should only let people view "Down"
-                return StatusCode(403);
-            }
-
-            if (!System.IO.Directory.Exists(absoluteDestinationDirectory))
-            {
-                return NotFound(new ApiError("The directory you are trying to move the file to does not exist"));
-            }
-
             if (string.IsNullOrEmpty(model.FileName))
             {
                 // directory move
@@ -234,7 +222,7 @@ namespace rest_file_api.controllers
                     return StatusCode(403);
                 }
 
-                var fullDestinationPath = this.GetAbsoluteFilePath(model.RelativePathToDestDirectory, model.FileName);
+                var fullDestinationPath = this.GetAbsoluteFilePath(model.RelativePathToDestDirectory, "");
                 if (!ResolvedPathIsValid(fullDestinationPath))
                 {
                     // User may be attempting to view "Up" directories -- app should only let people view "Down"
@@ -250,6 +238,11 @@ namespace rest_file_api.controllers
                 {
                     // In "real" production circumstances, I would figure out if we can just replace the file or increment its filename
                     return Conflict(new ApiError("There is already a file in the destination directory with that name. Delete that file and try again"));
+                }
+
+                if (!System.IO.Directory.Exists(Path.GetDirectoryName(fullDestinationPath)))
+                {
+                    return NotFound(new ApiError("The directory you are trying to move the file into does not exist"));
                 }
 
                 System.IO.File.Move(fullOriginalPath, fullDestinationPath);
@@ -392,6 +385,7 @@ namespace rest_file_api.controllers
                     });
                 }
             }
+            
             var apiDirectory = new ApiDirectory()
             {
                 Name = Path.GetFileName(relativePathToDirectory),
@@ -399,6 +393,7 @@ namespace rest_file_api.controllers
                 SubDirectories = subdir,
                 Files = files
             };
+
             return apiDirectory;
         }
 

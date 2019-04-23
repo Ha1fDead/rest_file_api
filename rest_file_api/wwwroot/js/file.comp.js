@@ -61,20 +61,20 @@ export default class FileComponent extends HTMLElement {
     }
 
     HandleMove(e, relativePath, fileName, subDirName) {
-        let path, file, subdir;
+        let path, file, destPath;
         if (subDirName) {
             path = `${relativePath ? `${relativePath}/` : ``}${subDirName}`;
             file = null;
             let dirInput = this.shadowRoot.getElementById("dirmoveinput");
-            subdir = dirInput.value;
+            destPath = dirInput.value;
         } else {
             path = relativePath ? relativePath : ``;
             file = fileName;
             let fileInput = this.shadowRoot.getElementById("filemoveinput");
-            subdir = fileInput.value;
+            destPath = fileInput.value;
         }
 
-        this.fileService.Move(path, file, subdir).then((res) => {
+        this.fileService.Move(path, file, destPath).then((res) => {
             alert('success');
         }, (err) => {
             alert(err);
