@@ -18,9 +18,17 @@ This is a simple demo project for MapLarge. The goals were to create a simple AP
 
 Requirements:
 
-1. `dotnetcore` installed ([download](https://dotnet.microsoft.com/download))
+1. `dotnetcore` SDK installed ([download](https://dotnet.microsoft.com/download))
 2. clone the project (`git clone https://github.com/Ha1fDead/rest_file_api.git`)
-3. run `dotnet start`
+3. run `dotnet run` from the `rest_file_api` directory (NOT the root solution)
+
+For Visual Studio Code:
+
+1. `dotnetcore` SDK installed ([download](https://dotnet.microsoft.com/download))
+2. Install the [C# Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp)
+3. clone the project (`git clone https://github.com/Ha1fDead/rest_file_api.git`)
+4. Open the solution in VSCode
+5. Hit F5, your default browser should open
 
 The app should be running on `http://localhost:5000` and `https://localhost:5001`. It should be rendering your root directory.
 NOTE: File operations done on your directory are permanent!
