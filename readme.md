@@ -97,5 +97,5 @@ Feature Improvements:
 6. Add warnings to move behavior (If user tries to change an extension)
 7. Add client-side file / directory existence support (moving `foo.txt` to `bar.txt` when there is already a `bar.txt`)
 8. Add lots of usability improvements & assumptions on what to do with directories that don't exist
-    i.e. user tries to move `foo/bar.txt` to `/some/path/chain/where/none/exists/bar.txt` then the system can just create all of those directories
+    (i.e. user tries to move `foo/bar.txt` to `/some/path/chain/where/none/exists/bar.txt` then the system can just create all of those directories)
 9. The UI could be a *lot* prettier and functional
