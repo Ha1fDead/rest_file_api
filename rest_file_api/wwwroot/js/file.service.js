@@ -69,6 +69,10 @@ export default class FileService {
             body: data
         }).catch(this._HandleNetworkError);
 
+        if (!res.ok) {
+            return this._HandleApplicationError(res);
+        }
+
         // operation was successful
         window.dispatchEvent(new Event('demo-datachange'));
         return Promise.resolve();
