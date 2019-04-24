@@ -21,6 +21,7 @@ Requirements:
 1. `dotnetcore` SDK installed ([download](https://dotnet.microsoft.com/download))
 2. clone the project (`git clone https://github.com/Ha1fDead/rest_file_api.git`)
 3. run `dotnet run` from the `rest_file_api` directory (NOT the root solution)
+
 (Note: Your browser will not automatically load from this setup)
 
 (You can run `dotnet --info` to verify dotnet core is installed correctly)
@@ -34,6 +35,7 @@ For Visual Studio Code:
 5. Hit F5, your default browser should open
 
 The app should be running on `http://localhost:5000` and `https://localhost:5001`. It should be rendering your home directory.
+
 NOTE: File operations done on your directory are permanent!
 
 To configure the root directory, simply change the configuration in `Program.cs`.
@@ -80,5 +82,18 @@ My biggest concerns would be in multi-user scenarios. Alice deletes record A at 
 1. Add webpack or rollupjs to build chain
 2. Introduce typescript & convert frontend
 3. Switch to React, Angular, or VueJS
-4. Vastly improve scalability
-5. Vastly improve security
+4. Vastly improve scalability (see above)
+5. Vastly improve security (see above)
+
+Feature Improvements:
+
+1. Add periodic network refresh
+2. Add PWA support for offline access, cache server responses
+3. Improve state reloading to granularly update content instead of bulk-rewrite
+4. Add "Empty Directory" info to let users know that an empty directory is valid
+5. Add drag + drop functionality for files (similar to Trello cards)
+6. Add warnings to move behavior (If user tries to change an extension)
+7. Add client-side file / directory existence support (moving `foo.txt` to `bar.txt` when there is already a `bar.txt`)
+8. Add lots of usability improvements & assumptions on what to do with directories that don't exist
+  i.e. user tries to move `foo/bar.txt` to `/some/path/chain/where/none/exists/bar.txt` then the system can just create all of those directories
+9. The UI could be a *lot* prettier and functional
