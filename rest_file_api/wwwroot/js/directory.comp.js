@@ -21,7 +21,10 @@ style.textContent = `
     }
 `;
 
-export default class DirectoriesComponent extends HTMLElement {
+/**
+ * Renders a directory with all of its child files & sub directories (is not recursive)
+ */
+export default class DirectoryComponent extends HTMLElement {
     constructor() {
         super();
 
@@ -58,7 +61,7 @@ export default class DirectoriesComponent extends HTMLElement {
     }
 
     UpgradeProperties() {
-        for (let prop of DirectoriesComponent.observedAttributes) {
+        for (let prop of DirectoryComponent.observedAttributes) {
             this.UpgradeProperty(prop);
         }
     }
@@ -92,4 +95,4 @@ export default class DirectoriesComponent extends HTMLElement {
     }
 }
 
-customElements.define("demo-directories", DirectoriesComponent);
+customElements.define("demo-directories", DirectoryComponent);

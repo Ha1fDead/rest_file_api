@@ -1,23 +1,39 @@
- export default class FileService {
+/**
+ * Makes Restful calls to the server for File actions
+ */
+export default class FileService {
     constructor() {
 
     }
 
+    /**
+     * Gets the current relative path from the URL
+     */
     GetCurrentRelativePath() {
         return decodeURI(window.location.pathname.substr(1));
     }
 
+    /**
+     * Generates the (NOT ESCAPED) link to a sub-directory
+     * @param {string} relativePath to the subdirectory
+     * @param {string} subDirectory to generate the link for
+     */
     GenerateLinkToDirectory(relativePath, subDirectory) {
         return `/${relativePath ? `${relativePath}/` : ``}${subDirectory}`;
     }
 
+    /**
+     * Generates the (NOT ESCAPED) link to download a file
+     * @param {string} relativePath to the file
+     * @param {string} fileName to generate the link for
+     */
     GenerateLinkToFile(relativePath, fileName) {
         return `/api/file/download/${relativePath ? `${relativePath}/` : ``}${fileName}`;
     } 
 
     /**
      * Retrieves a directory & its immediate children
-     * @param {string} relativePathToDirectory 
+     * @param {string} relativePathToDirectory to be retrieved
      */
     async GetDirectory(relativePathToDirectory) {
         if (relativePathToDirectory == null) {
@@ -38,7 +54,7 @@
     /**
      * Attempts to upload files
      * @param {FileList} filesToUpload 
-     * @param {string} relativePathToDirectory 
+     * @param {string} relativePathToDirectory where the files will be uploaded to
      */
     async UploadFile(filesToUpload, relativePathToDirectory) {
         const data = new FormData();
@@ -65,9 +81,9 @@
 
     /**
      * Attempts to copy a directory or file
-     * @param {string} relativePathToDirectory 
-     * @param {string} fileName 
-     * @param {string} copyName 
+     * @param {string} relativePathToDirectory to the file or directory to be copied
+     * @param {string | null} fileName of the file to be copied
+     * @param {string} copyName the name of the to-be copied file or directory
      */
     async Copy(relativePathToDirectory, fileName, copyName) {
         const data = {
@@ -94,15 +110,18 @@
 
     /**
      * Attempts to move a directory or file
-     * @param {string} relativePathToDirectory 
-     * @param {string} fileName 
-     * @param {string} relativePathToDestDirectory 
+     * @param {string} relativePathToDirectory to the file to be moved
+     * @param {string} fileName of the file to be moved
+     * @param {string} relativePathToDestinationFile the relative destination path w/ the file
+     * 
+     * Move is special, because existing `mv` functions on Unix behave in a certain way, users would expect move to also handle renames instead of just directory moving
+     * So the `relativePathToDestinationFile` should be the full-relative-path i.e. `/path/to/my/file.txt` so users could rename `foo.txt` to `file.txt`
      */
-    async Move(relativePathToDirectory, fileName, relativePathToDestDirectory) {
+    async Move(relativePathToDirectory, fileName, relativePathToDestinationFile) {
         const data = {
             FileName: fileName ? fileName : '',
             RelativePathToDirectory: relativePathToDirectory,
-            RelativePathToDestDirectory: relativePathToDestDirectory
+            RelativePathToDestDirectory: relativePathToDestinationFile
         };
         const res = await fetch(`/api/file/move`, {
             method: 'put',
@@ -123,8 +142,8 @@
 
     /**
      * Attempts to delete a directory or file
-     * @param {string} relativePathToDirectory 
-     * @param {string} fileName 
+     * @param {string} relativePathToDirectory of the file or directory to be deleted
+     * @param {string | null} fileName (optional) - the filename to be deleted, if deleting a file
      * @returns {Promise<void, string>}
      */
     async Delete(relativePathToDirectory, fileName) {

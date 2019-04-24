@@ -1,5 +1,5 @@
 // force imports so web components load. Not a problem w/ webpack where we can automate it
-import DirectoriesComponent from './directories.comp.js';
+import DirectoryComponent from './directory.comp.js';
 import UploadComponent from './upload.comp.js';
 import PathMapComponent from './pathmap.comp.js';
 import NotFoundComponent from './notfound.comp.js';
@@ -30,6 +30,11 @@ style.textContent = `
     }
 `;
 
+/**
+ * Let's users navigate a server directory files & sub directories
+ * 
+ * Also allows users to upload, move, copy, delete, and upload files / directories
+ */
 export default class DirectoryBrowserComponent extends HTMLElement {
     constructor() {
         super();

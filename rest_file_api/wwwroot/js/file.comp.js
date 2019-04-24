@@ -10,6 +10,9 @@ style.textContent = `
 
 `;
 
+/**
+ * Displays a single file or directory w/ delete, move, copy, download controls
+ */
 export default class FileComponent extends HTMLElement {
     constructor() {
         super();
