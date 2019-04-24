@@ -2,6 +2,8 @@
 
 This is a simple demo project for MapLarge. The goals were to create a simple API + SPA that can browse files / folders from a configurable base directory running on the server.
 
+![Screenshot](./docs/screenshot.png "Screenshot")
+
 ## Features
 
 - Users can view all directories and files from a configurable Root URL
