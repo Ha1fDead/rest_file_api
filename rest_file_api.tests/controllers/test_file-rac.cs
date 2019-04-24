@@ -32,7 +32,7 @@ namespace rest_file_api.tests.controllers
 
             // assert
             var actionResult = Assert.IsType<ActionResult<ApiDirectory>>(result);
-            Assert.IsAssignableFrom<NotFoundResult>(actionResult.Result);
+            Assert.IsAssignableFrom<NotFoundObjectResult>(actionResult.Result);
         }
 
         [Fact]
@@ -84,133 +84,133 @@ namespace rest_file_api.tests.controllers
             Assert.NotNull(apiResult);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Download_FileDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Download_Exists_ReturnsFile()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Upload_NoFiles_BadRequest()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Upload_FileAlreadyExists_Conflict()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Upload_Valid_Uploaded()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Search_()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Delete_FileDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Delete_DirectoryDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Delete_Directory_Deletes()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Delete_File_Deletes()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_FileDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_DirectoryDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_FileExistsAtDestination_Conflict()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_DirectoryExistsAtDestination_Conflict()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_File_MovesFile()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Move_Directory_MovesDirectory()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_FileDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_DirectoryDoesntExist_NotFound()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_FileExistsAtDestination_Conflict()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_DirectoryExistsAtDestination_Conflict()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_File_CopiesFile()
         {
             Assert.True(false);
         }
 
-        [Fact]
+        [Fact(Skip = "Scaffold test")]
         public void Copy_Directory_CopiesDirectory()
         {
             Assert.True(false);
